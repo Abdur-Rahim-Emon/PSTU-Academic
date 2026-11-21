@@ -1,0 +1,271 @@
+R1-ISP CONFIGURATION : 
+enable
+configure terminal
+interface FastEthernet0/0
+ ip address 172.169.254.62  255.255.255.192
+ no shutdown
+exit
+
+interface Serial0/0/0
+ ip address 172.169.254.129 255.255.255.252
+ clock rate 64000
+ no shutdown
+exit
+
+interface Serial0/0/1
+ ip address 172.169.254.133  255.255.255.252
+ clock rate 64000
+ no shutdown
+exit
+hostname R1-ISP
+enable secret pstu
+
+banner motd #This is lab router R1-ISP. Authorized access only.#
+
+line console 0
+ password pstu
+ login
+exit
+
+line vty 0 4
+ password pstu
+ login
+exit
+
+ip route 172.169.254.96 255.255.255.240 172.169.254.130
+ip route 172.169.254.64 255.255.255.224 172.169.254.130
+ip route 172.169.254.112 255.255.255.240 172.169.254.134
+end
+copy running-config startup-config
+
+R2-CENTRAL CONFIGURATION : 
+enable
+configure terminal
+hostname R2-Central
+enable secret pstu
+
+line console 0
+ password pstu
+ login
+exit
+
+line vty 0 4
+ password pstu
+ login
+exit
+
+banner motd #This is lab router R2-Central. Authorized access only.#
+
+interface FastEthernet0/0
+ ip address 172.169.254.110 255.255.255.240
+ no shutdown
+exit
+
+interface FastEthernet0/1
+ ip address 172.169.254.94 255.255.255.224
+ no shutdown
+exit
+
+interface Serial0/0/0
+ ip address 172.169.254.130 255.255.255.252
+clock rate 64000
+ no shutdown
+exit
+
+interface Serial0/0/1
+ ip address 172.169.254.137 255.255.255.252
+ clock rate 64000
+ no shutdown
+exit
+
+ip route 0.0.0.0 0.0.0.0 172.169.254.129
+ip route 172.169.254.112 255.255.255.248 172.169.254.138
+end
+copy running-config startup-config
+R3-ISP
+enable
+configure terminal
+hostname R3-ISP
+enable secret pstu
+
+line console 0
+ password pstu
+ login
+exit
+
+line vty 0 4
+ password pstu
+ login
+exit
+
+banner motd #This is lab router R3-ISP. Authorized access only.#
+
+interface FastEthernet0/0
+ ip address 172.169.254.126 255.255.255.240
+ no shutdown
+exit
+ip route 0.0.0.0 0.0.0.0 172.169.254.133
+ip route 0.0.0.0 0.0.0.0 172.169.254.130
+
+interface Serial0/0/1
+ ip address 172.169.254.134 255.255.255.252
+ clock rate 64000
+ no shutdown
+exit
+
+interface Serial0/0/0
+ ip address 172.169.254.138 255.255.255.252
+ clock rate 64000
+ no shutdown
+exit
+
+end
+copy running-config startup-config
+Switch Configuration : 
+	sw1
+enable
+configure terminal
+hostname SW1
+enable secret pstu
+
+banner motd #This is lab switch SW1. Authorized access only.#
+
+line console 0
+ password pstu
+ login
+exit
+
+line vty 0 15
+ password pstu
+ login
+exit
+
+interface vlan 1
+ ip address 172.169.254.3 255.255.255.192
+ no shutdown
+exit
+
+ip default-gateway 172.169.254.62
+
+end
+copy running-config startup-config
+	SW 2A 
+enable
+configure terminal
+hostname SW2A
+enable secret pstu
+
+banner motd #This is lab switch S2A-Central. Authorized access only.#
+
+line console 0
+ password pstu
+ login
+exit
+
+line vty 0 15
+ password pstu
+ login
+exit
+
+interface vlan 1
+ ip address 172.169.254.98 255.255.255.240
+ no shutdown
+exit
+
+ip default-gateway 172.169.254.110
+
+end
+copy running-config startup-config
+SW-2B
+
+enable
+configure terminal
+hostname SW2B
+enable secret pstu
+
+banner motd #This is lab switch SW-2B. Authorized access only.#
+
+line console 0
+ password pstu
+ login
+exit
+
+line vty 0 15
+ password pstu
+ login
+exit
+
+interface vlan 1
+ ip address 172.169.254.66 255.255.255.224
+ no shutdown
+Exit
+	SW3
+enable
+configure terminal
+hostname SW3
+enable secret pstu
+
+banner motd #This is lab switch SW3. Authorized access only.#
+
+line console 0
+ password pstu
+ login
+exit
+
+line vty 0 15
+ password pstu
+ login
+exit
+
+interface vlan 1
+ ip address 172.169.254.114 255.255.255.240
+ no shutdown
+exit
+
+ip default-gateway 172.169.254.126
+
+end
+copy running-config startup-config
+
+5. Server Configuration
+PSTU DNS Server
+	IP Configuration: IP: 172.169.254.93, Subnet: 255.255.255.224, Default Gateway: 172.169.254.94, DNS: 172.169.254.93.
+	DNS Services: Go to Services → DNS → Turn Service ON.
+	Record 1: Name: pstu.ac.bd, Type: A Record, Address: 172.169.254.93.
+	Record 2: Name: cse.com, Type: A Record, Address: 172.169.254.93.
+	HTTP Services: Ensure HTTP/HTTPS are ON.
+PSTU DHCP Server
+	IP Configuration: IP: 172.169.254.125, Subnet: 255.255.255.240, Default Gateway: 172.169.254.126, DNS: 172.169.254.93.
+	DHCP Services: Go to Services → DHCP → Turn Service ON.
+	Pool Name: PSTU_DHCP_Server
+	Default Gateway: 172.169.254.126 (or 192.168.1.1 per specification)
+	DNS Server: 172.169.254.93
+	Start IP: 192.168.1.96 (Subnet Mask: 255.255.255.224), Max Users: 31. Click Save.
+Step 4: Home Router & Wireless Laptop Setup
+	Home Router Internet Port Setup:
+	GUI Configuration → Internet / WAN setup → Connection Type: Static IP.
+	IP Address: 172.169.254.2, Subnet Mask: 255.255.255.192, Default Gateway: 172.169.254.62, DNS: 172.169.254.93.
+	Wireless Configuration:
+	Wireless tab → SSID: CCE.
+	Wireless Security → Security Mode: WPA2 Personal, Passphrase: csepstu123.
+	Laptop Wi-Fi Connection:
+	Replace Laptop network card with the WPC300N wireless module if necessary.
+	Open Desktop → PC Wireless → Connect → Select CCE → Enter password csepstu123.
+Step 5: Protocol & Simulation Analysis
+	Web Request Execution:
+	Switch Packet Tracer to Simulation Mode.
+	Set Event Filters to show: DNS, HTTP, TCP, UDP, ICMP, ARP.
+	From PC-1A browser, request [http://pstu.ac.bd](http://pstu.ac.bd).
+	Protocol Flow:
+	ARP: Broadcasts to discover Gateway MAC address.
+	DNS: Sends UDP query to IP 172.169.254.93 to resolve pstu.ac.bd.
+	TCP: Executes 3-Way Handshake (SYN → SYN-ACK → ACK).
+	HTTP: Sends HTTP GET request and receives 200 OK response.
+	Traceroute Execution:
+	In Simulation mode, run tracert 172.169.254.93 on PC-1A command prompt.
+	ICMP Mechanics:
+	Packets start with "TTL"=1.
+	R1-ISP decrements TTL to 0, drops packet, and replies with ICMP Time Exceeded (Type 11).
+	Subsequent packet has "TTL"=2, allowing it to reach the destination server and receive an ICMP Echo Reply (Type 0).
+Would you like assistance setting up dynamic routing protocols like OSPF/RIP if you decide to expand this multi-router WAN setup?
+

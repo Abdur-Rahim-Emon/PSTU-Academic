@@ -1,0 +1,22 @@
+< THE SYMBOL TABLE >  if_else_condition.exe  --  emu8086 assembler version: 4.08 
+===================================================================================================
+Name                     	Offset    	Size      	Type      	Segment   
+===================================================================================================
+STACK                    	00000     	-5        	SEGMENT   	(ITSELF)  
+DATA                     	00010     	-5        	SEGMENT   	(ITSELF)  
+A                        	00000     	1         	VAR       	data      
+B                        	00014     	1         	VAR       	data      
+C                        	0002A     	1         	VAR       	data      
+X                        	0003F     	1         	VAR       	data      
+Y                        	00040     	1         	VAR       	data      
+Z                        	00041     	1         	VAR       	data      
+N                        	00042     	1         	VAR       	data      
+CODE                     	00015     	-5        	SEGMENT   	(ITSELF)  
+MAIN                     	00000     	-1        	NEAR      	code      
+L1                       	0003C     	-1        	LABEL     	code      
+L2                       	00044     	-1        	LABEL     	code      
+EXIT                     	0004C     	-1        	LABEL     	code      
+===================================================================================================
+[ 7/21/2026  --  7:29:23 AM ] 
+< END >
+ 

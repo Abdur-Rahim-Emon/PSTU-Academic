@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 15 – TCP Study Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --card: #1e2336;
+    --border: #2a3050;
+    --accent: #4f8ef7;
+    --accent2: #7c5cfc;
+    --green: #22d3a0;
+    --yellow: #f5c842;
+    --red: #f5566a;
+    --text: #e2e8f8;
+    --muted: #7a85a8;
+    --heading: #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15,17,23,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 52px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 5px 11px;
+    border-radius: 20px;
+    transition: all .2s;
+    border: 1px solid transparent;
+  }
+  nav a:hover { color: var(--accent); border-color: var(--accent); }
+  .nav-brand { color: var(--heading); font-weight: 700; font-size: 14px; margin-right: 12px; flex-shrink: 0; }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, #111827 0%, #1a1f35 50%, #0f1117 100%);
+    padding: 60px 32px 48px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-eyebrow {
+    display: inline-block;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 18px;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 5vw, 52px);
+    color: var(--heading);
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+
+  .hero h1 span { color: var(--accent); }
+
+  .hero p {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 540px;
+    margin: 0 auto 28px;
+  }
+
+  .topic-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .pill {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12.5px;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  main { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* ── SECTION ── */
+  .section {
+    margin-bottom: 56px;
+    scroll-margin-top: 70px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .section-num {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .section-header h2 {
+    font-size: 21px;
+    font-weight: 700;
+    color: var(--heading);
+  }
+
+  .section-header .section-subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-weight: 700;
+    color: var(--heading);
+    font-size: 15px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title .icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .icon-blue { background: rgba(79,142,247,0.2); }
+  .icon-green { background: rgba(34,211,160,0.2); }
+  .icon-yellow { background: rgba(245,200,66,0.2); }
+  .icon-purple { background: rgba(124,92,252,0.2); }
+  .icon-red { background: rgba(245,86,106,0.2); }
+
+  /* ── PURPOSE BOX ── */
+  .purpose {
+    background: rgba(79,142,247,0.08);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 18px;
+    margin-bottom: 14px;
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  .purpose strong { color: var(--accent); }
+
+  /* ── NOTE BOXES ── */
+  .note {
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-size: 13.5px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .note-exam {
+    background: rgba(245,200,66,0.1);
+    border: 1px solid rgba(245,200,66,0.3);
+    color: var(--yellow);
+  }
+
+  .note-key {
+    background: rgba(34,211,160,0.1);
+    border: 1px solid rgba(34,211,160,0.3);
+    color: var(--green);
+  }
+
+  .note-warn {
+    background: rgba(245,86,106,0.1);
+    border: 1px solid rgba(245,86,106,0.3);
+    color: var(--red);
+  }
+
+  .note-label {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-right: 4px;
+    white-space: nowrap;
+  }
+
+  /* ── DIAGRAM / FLOW ── */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: 10px;
+    margin: 12px 0;
+    font-size: 13px;
+  }
+
+  .flow-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-weight: 600;
+    text-align: center;
+    min-width: 80px;
+  }
+
+  .flow-box.highlight { border-color: var(--accent); color: var(--accent); background: rgba(79,142,247,0.1); }
+  .flow-box.green-box { border-color: var(--green); color: var(--green); background: rgba(34,211,160,0.1); }
+  .flow-box.red-box { border-color: var(--red); color: var(--red); background: rgba(245,86,106,0.1); }
+
+  .arrow { color: var(--muted); font-size: 18px; }
+
+  /* ── TABLE ── */
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 14px 0; }
+  th {
+    background: rgba(79,142,247,0.15);
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 2px solid var(--border);
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ── CODE STYLE ── */
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: rgba(255,255,255,0.07);
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--green);
+  }
+
+  .code-block {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    color: #a8d8a8;
+    margin: 12px 0;
+    overflow-x: auto;
+  }
+
+  .code-block .comment { color: #5a6a5a; }
+  .code-block .label { color: var(--accent); }
+  .code-block .val { color: var(--yellow); }
+
+  /* ── ANALOGY BOX ── */
+  .analogy {
+    background: linear-gradient(135deg, rgba(124,92,252,0.1), rgba(79,142,247,0.08));
+    border: 1px solid rgba(124,92,252,0.3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 14px 0;
+    font-size: 14px;
+  }
+
+  .analogy strong { color: var(--accent2); }
+
+  /* ── HANDSHAKE VISUAL ── */
+  .handshake {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 14px 0;
+    font-size: 13px;
+  }
+
+  .hs-row {
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr;
+    align-items: center;
+    gap: 8px;
+    margin: 6px 0;
+  }
+
+  .hs-client { text-align: right; padding: 8px 12px; background: rgba(79,142,247,0.1); border-radius: 8px; border: 1px solid rgba(79,142,247,0.3); }
+  .hs-server { text-align: left; padding: 8px 12px; background: rgba(34,211,160,0.1); border-radius: 8px; border: 1px solid rgba(34,211,160,0.3); }
+  .hs-msg { text-align: center; font-size: 10px; color: var(--muted); }
+  .hs-arrow { text-align: center; font-size: 20px; }
+  .hs-label { font-weight: 700; font-size: 11.5px; letter-spacing: 0.5px; }
+  .client-color { color: var(--accent); }
+  .server-color { color: var(--green); }
+
+  .hs-party {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  /* ── SEGMENT FIELD TABLE ── */
+  .seg-field {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+    margin: 12px 0;
+  }
+
+  .seg-cell {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .seg-cell .field-name { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; }
+  .seg-cell .field-size { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .seg-cell .field-desc { font-size: 11.5px; margin-top: 5px; color: var(--text); line-height: 1.4; }
+
+  /* ── MCQ SECTION ── */
+  .mcq-set { margin: 0; }
+
+  .mcq-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+  }
+
+  .mcq-q {
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--heading);
+    font-size: 14px;
+  }
+
+  .mcq-q span { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 13px; margin-right: 6px; }
+
+  .options { display: grid; gap: 7px; }
+
+  .opt {
+    padding: 9px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 13.5px;
+    transition: all .18s;
+    user-select: none;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .opt:hover { border-color: var(--accent); background: rgba(79,142,247,0.07); }
+  .opt .opt-letter { font-weight: 700; color: var(--muted); width: 16px; flex-shrink: 0; }
+  .opt.correct { background: rgba(34,211,160,0.12); border-color: var(--green); color: var(--green); }
+  .opt.correct .opt-letter { color: var(--green); }
+  .opt.wrong { background: rgba(245,86,106,0.12); border-color: var(--red); color: var(--red); }
+  .opt.wrong .opt-letter { color: var(--red); }
+
+  .mcq-result { font-size: 12.5px; margin-top: 10px; display: none; padding: 8px 14px; border-radius: 8px; }
+  .mcq-result.show { display: block; }
+  .mcq-result.ok { background: rgba(34,211,160,0.1); color: var(--green); }
+  .mcq-result.fail { background: rgba(245,86,106,0.1); color: var(--red); }
+
+  /* ── FILL BLANKS ── */
+  .fill-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+  }
+
+  .fill-q {
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: var(--heading);
+    line-height: 1.8;
+  }
+
+  .blank-input {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    width: 140px;
+    transition: border .2s;
+    outline: none;
+  }
+
+  .blank-input:focus { border-color: var(--accent); }
+  .blank-input.correct-fill { border-color: var(--green); background: rgba(34,211,160,0.1); color: var(--green); }
+  .blank-input.wrong-fill { border-color: var(--red); background: rgba(245,86,106,0.1); color: var(--red); }
+
+  .check-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 20px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 10px;
+    transition: opacity .2s;
+  }
+
+  .check-btn:hover { opacity: 0.85; }
+
+  .fill-feedback { font-size: 12.5px; margin-top: 8px; display: none; }
+  .fill-feedback.show { display: block; }
+
+  /* ── PROGRESS ── */
+  .progress-bar {
+    position: fixed;
+    top: 52px;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width .2s;
+    z-index: 99;
+  }
+
+  /* ── QUICK FACTS ── */
+  .facts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin: 14px 0;
+  }
+
+  .fact-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+
+  .fact-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+  }
+
+  .fact-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  /* ── LIST STYLES ── */
+  ul.clean { list-style: none; padding: 0; }
+  ul.clean li { padding: 6px 0 6px 22px; position: relative; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 14px; }
+  ul.clean li::before { content: '▸'; position: absolute; left: 0; color: var(--accent); }
+  ul.clean li:last-child { border-bottom: none; }
+
+  /* ── SECTION DIVIDER ── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  /* ── SCORE BOX ── */
+  .score-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    text-align: center;
+    margin: 24px 0;
+  }
+
+  .score-num { font-size: 48px; font-weight: 700; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+  .score-label { color: var(--muted); font-size: 14px; margin-top: 4px; }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<nav>
+  <span class="nav-brand">📡 TCP Ch.15</span>
+  <a href="#services">15-1 Services</a>
+  <a href="#features">15-2 Features</a>
+  <a href="#segment">15-3 Segment</a>
+  <a href="#connection">15-4 Connection</a>
+  <a href="#windows">15-6 Windows</a>
+  <a href="#flow">15-7 Flow</a>
+  <a href="#error">15-8 Error</a>
+  <a href="#congestion">15-9 Congestion</a>
+  <a href="#options">15-11 Options</a>
+  <a href="#mcq">MCQ Practice</a>
+  <a href="#fill">Fill Blanks</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">TCP/IP Protocol Suite · Chapter 15</div>
+  <h1>Transmission Control<br><span>Protocol (TCP)</span></h1>
+  <p>Step-by-step explanations · Real analogies · MCQ & Fill-in-the-blank practice</p>
+  <div class="topic-pills">
+    <span class="pill">TCP Services</span>
+    <span class="pill">Segment Format</span>
+    <span class="pill">3-Way Handshake</span>
+    <span class="pill">Flow Control</span>
+    <span class="pill">Error Control</span>
+    <span class="pill">Congestion Control</span>
+    <span class="pill">Numbering System</span>
+    <span class="pill">ACK Rules</span>
+    <span class="pill">TCP Options</span>
+  </div>
+</div>
+
+<main>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- HOW TOPICS CONNECT -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="overview">
+  <div class="section-header">
+    <div class="section-num">★</div>
+    <div>
+      <h2>How Topics Flow Together</h2>
+      <div class="section-subtitle">Read this first — it's the map of the whole chapter</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p style="margin-bottom:14px; color:var(--muted); font-size:13.5px;">
+      Every section builds on the previous. Here's the logical order:
+    </p>
+    <div class="flow">
+      <div class="flow-box highlight">15-1<br><small>SERVICES</small></div>
+      <span class="arrow">→</span>
+      <div class="flow-box">15-2<br><small>FEATURES</small></div>
+      <span class="arrow">→</span>
+      <div class="flow-box">15-3<br><small>SEGMENT</small></div>
+      <span class="arrow">→</span>
+      <div class="flow-box">15-4<br><small>CONNECTION</small></div>
+      <span class="arrow">→</span>
+      <div class="flow-box">15-6<br><small>WINDOWS</small></div>
+      <span class="arrow">→</span>
+      <div class="flow-box">15-7<br><small>FLOW</small></div>
+      <span class="arrow">→</span>
+      <div class="flow-box">15-8<br><small>ERROR</small></div>
+      <span class="arrow">→</span>
+      <div class="flow-box green-box">15-9<br><small>CONGESTION</small></div>
+    </div>
+    <ul class="clean" style="margin-top:14px;">
+      <li><strong>Services (15-1)</strong> → What TCP promises to do (reliable, ordered delivery)</li>
+      <li><strong>Features (15-2)</strong> → How TCP keeps those promises (numbering, flow/error/congestion control)</li>
+      <li><strong>Segment (15-3)</strong> → The actual packet format TCP uses to carry data</li>
+      <li><strong>Connection (15-4)</strong> → How TCP sets up and tears down a connection (3-way handshake)</li>
+      <li><strong>Windows (15-6)</strong> → The sliding window mechanism used for flow and error control</li>
+      <li><strong>Flow Control (15-7)</strong> → Prevents a fast sender from overwhelming a slow receiver</li>
+      <li><strong>Error Control (15-8)</strong> → Detects and recovers lost/corrupted segments</li>
+      <li><strong>Congestion Control (15-9)</strong> → Prevents overloading the network itself</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 15-1 TCP SERVICES -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="services">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div>
+      <h2>15-1 TCP Services</h2>
+      <div class="section-subtitle">What does TCP promise to deliver?</div>
+    </div>
+  </div>
+
+  <div class="purpose">
+    <strong>Purpose:</strong> TCP sits between the Application Layer and Network Layer. It acts as a middleman that provides reliable, ordered, full-duplex communication between two processes (not machines — processes!).
+  </div>
+
+  <div class="analogy">
+    <strong>📬 Analogy:</strong> UDP is like dropping a letter in a mailbox — you don't know if it arrives. TCP is like sending a <em>registered parcel</em> with tracking, signature confirmation, and re-delivery if it fails.
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-blue">①</span> Process-to-Process Communication</div>
+    <p>TCP identifies communication endpoints using <strong>port numbers</strong>, not IP addresses. IP addresses identify machines; ports identify the specific application/process on that machine.</p>
+    <div class="flow" style="margin-top:12px;">
+      <div class="flow-box highlight">Client App<br><small>(Port 52000)</small></div>
+      <span class="arrow">⟷ TCP ⟷</span>
+      <div class="flow-box green-box">Web Server<br><small>(Port 80)</small></div>
+    </div>
+    <div class="note note-exam"><span class="note-label">Exam tip</span> TCP uses port numbers for process-to-process communication; IP uses IP addresses for host-to-host.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-green">②</span> Stream Delivery Service</div>
+    <p>TCP treats data as a <strong>continuous stream of bytes</strong>, not individual packets. The sending application writes bytes into a sending buffer; TCP groups these into segments to send; the receiving buffer holds them until the receiving application reads them.</p>
+    <div class="note note-key"><span class="note-label">Key</span> The boundary between messages is NOT preserved by TCP — it's a stream, not a message service.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-yellow">③</span> Full-Duplex Communication</div>
+    <p>Data can flow in <strong>both directions simultaneously</strong>. Each side has its own send and receive buffer. This is why TCP uses <strong>piggybacking</strong> — data and acknowledgments travel together in the same segment.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-purple">④</span> Multiplexing and Demultiplexing</div>
+    <p><strong>Multiplexing:</strong> Many processes on the sender can share TCP (combine into one stream). <strong>Demultiplexing:</strong> TCP at the receiver separates incoming data and delivers it to the correct process using port numbers.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-blue">⑤</span> Connection-Oriented Service</div>
+    <p>Before data transfer, TCP must establish a <strong>logical connection</strong> (virtual circuit). After transfer, it terminates the connection. This is done via the 3-way handshake (explained in Section 15-4).</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-red">⑥</span> Reliable Service</div>
+    <p>TCP uses <strong>acknowledgment numbers</strong> and <strong>timers</strong> to ensure every byte of data is received. If a segment is lost or corrupted, TCP retransmits it automatically.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 15-2 TCP FEATURES -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="features">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div>
+      <h2>15-2 TCP Features</h2>
+      <div class="section-subtitle">How TCP implements those services</div>
+    </div>
+  </div>
+
+  <div class="purpose">
+    <strong>Purpose:</strong> These are the internal mechanisms TCP uses. Think of them as tools in TCP's toolbox to keep its promises.
+  </div>
+
+  <!-- Numbering System -->
+  <div class="card">
+    <div class="card-title"><span class="icon icon-blue">🔢</span> Numbering System</div>
+    <p>TCP assigns a <strong>sequence number</strong> to every byte of data, not to each segment. The sequence number in a segment header = the number of the <strong>first byte</strong> in that segment.</p>
+    <div class="note note-key"><span class="note-label">Key Rule</span> Numbering starts at an <strong>arbitrarily generated random number</strong> (not 0 or 1) — this is for security.</div>
+
+    <div class="code-block">
+<span class="comment">── Example 15.1 ──────────────────────────────────</span>
+File size     : <span class="val">5,000 bytes</span>
+First byte #  : <span class="val">10,001</span>
+Segment size  : <span class="val">1,000 bytes each</span>
+Total segments: <span class="val">5</span>
+
+<span class="label">Segment 1:</span> bytes 10,001 – 11,000  →  seq# = <span class="val">10,001</span>
+<span class="label">Segment 2:</span> bytes 11,001 – 12,000  →  seq# = <span class="val">11,001</span>
+<span class="label">Segment 3:</span> bytes 12,001 – 13,000  →  seq# = <span class="val">12,001</span>
+<span class="label">Segment 4:</span> bytes 13,001 – 14,000  →  seq# = <span class="val">13,001</span>
+<span class="label">Segment 5:</span> bytes 14,001 – 15,000  →  seq# = <span class="val">14,001</span>
+    </div>
+
+    <div class="note note-exam"><span class="note-label">Exam tip</span> The <strong>sequence number</strong> = number of the <em>first</em> data byte in the segment. The <strong>acknowledgment number</strong> = number of the <em>next</em> byte the receiver expects. ACK is cumulative.</div>
+  </div>
+
+  <div class="facts-grid">
+    <div class="fact-card">
+      <span class="fact-val">ISN</span>
+      <div class="fact-label">Initial Sequence Number — randomly generated at connection start</div>
+    </div>
+    <div class="fact-card">
+      <span class="fact-val">ACK</span>
+      <div class="fact-label">Acknowledgment = next byte expected (cumulative)</div>
+    </div>
+    <div class="fact-card">
+      <span class="fact-val">Seq#</span>
+      <div class="fact-label">Number of first byte in that segment</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div class="card-title"><span class="icon icon-green">🌊</span> Flow Control</div>
+    <p>Controls how much data the sender can send before getting an ACK. The receiver advertises a <strong>receive window (rwnd)</strong> — how many bytes of buffer space it has available. The sender must not exceed this.</p>
+    <div class="note note-key"><span class="note-label">Key</span> Flow control protects the <strong>receiver</strong> from being overwhelmed. Congestion control protects the <strong>network</strong>.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-yellow">🛡️</span> Error Control</div>
+    <p>Ensures reliable delivery using: <strong>checksum</strong> (detect corruption), <strong>acknowledgment numbers</strong> (confirm receipt), and <strong>timers/retransmission</strong> (recover lost segments).</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-purple">🚦</span> Congestion Control</div>
+    <p>TCP monitors network traffic and reduces its sending rate when congestion is detected. Uses a <strong>congestion window (cwnd)</strong> in addition to rwnd.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 15-3 SEGMENT -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="segment">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div>
+      <h2>15-3 TCP Segment Format</h2>
+      <div class="section-subtitle">The structure of every TCP packet</div>
+    </div>
+  </div>
+
+  <div class="purpose">
+    <strong>Purpose:</strong> A TCP packet is called a <strong>segment</strong>. Each segment has a header (minimum 20 bytes, max 60 bytes) and a data portion. The header fields tell TCP what to do with the data.
+  </div>
+
+  <div class="analogy">
+    <strong>📦 Analogy:</strong> A segment is like a shipping box. The header is the label on the box (who it's for, tracking number, handling instructions). The data is what's inside.
+  </div>
+
+  <div class="seg-field">
+    <div class="seg-cell">
+      <div class="field-name">Source Port</div>
+      <div class="field-size">16 bits</div>
+      <div class="field-desc">Port number of the sending application</div>
+    </div>
+    <div class="seg-cell">
+      <div class="field-name">Dest Port</div>
+      <div class="field-size">16 bits</div>
+      <div class="field-desc">Port number of the receiving application</div>
+    </div>
+    <div class="seg-cell" style="border-color:var(--accent);">
+      <div class="field-name" style="color:var(--accent);">Sequence #</div>
+      <div class="field-size">32 bits</div>
+      <div class="field-desc">Number of first data byte in this segment</div>
+    </div>
+    <div class="seg-cell" style="border-color:var(--green);">
+      <div class="field-name" style="color:var(--green);">ACK #</div>
+      <div class="field-size">32 bits</div>
+      <div class="field-desc">Next byte the sender expects to receive</div>
+    </div>
+    <div class="seg-cell">
+      <div class="field-name">HLEN</div>
+      <div class="field-size">4 bits</div>
+      <div class="field-desc">Header length in 4-byte units (min=5, max=15)</div>
+    </div>
+    <div class="seg-cell" style="border-color:var(--yellow);">
+      <div class="field-name" style="color:var(--yellow);">Control</div>
+      <div class="field-size">6 bits</div>
+      <div class="field-desc">URG, ACK, PSH, RST, SYN, FIN flags</div>
+    </div>
+    <div class="seg-cell">
+      <div class="field-name">Window Size</div>
+      <div class="field-size">16 bits</div>
+      <div class="field-desc">Receive window — bytes receiver can accept</div>
+    </div>
+    <div class="seg-cell">
+      <div class="field-name">Checksum</div>
+      <div class="field-size">16 bits</div>
+      <div class="field-desc">Error detection. MANDATORY in TCP</div>
+    </div>
+    <div class="seg-cell">
+      <div class="field-name">Urgent Ptr</div>
+      <div class="field-size">16 bits</div>
+      <div class="field-desc">Valid only when URG flag is set</div>
+    </div>
+    <div class="seg-cell">
+      <div class="field-name">Options</div>
+      <div class="field-size">0–40 bytes</div>
+      <div class="field-desc">Optional extra features (MSS, timestamps, etc.)</div>
+    </div>
+  </div>
+
+  <!-- Control Flags -->
+  <div class="card">
+    <div class="card-title"><span class="icon icon-yellow">🚩</span> Control Flags (6 bits)</div>
+    <table>
+      <tr><th>Flag</th><th>Full Name</th><th>When Used</th></tr>
+      <tr><td><code>URG</code></td><td>Urgent</td><td>Urgent data is present; urgent pointer is valid</td></tr>
+      <tr><td><code style="color:var(--green)">ACK</code></td><td>Acknowledgment</td><td>ACK field is valid (almost always set after connection)</td></tr>
+      <tr><td><code>PSH</code></td><td>Push</td><td>Deliver data to application immediately, don't buffer</td></tr>
+      <tr><td><code style="color:var(--red)">RST</code></td><td>Reset</td><td>Abort the connection immediately</td></tr>
+      <tr><td><code style="color:var(--accent)">SYN</code></td><td>Synchronize</td><td>Connection establishment — synchronize sequence numbers</td></tr>
+      <tr><td><code style="color:var(--yellow)">FIN</code></td><td>Finish</td><td>No more data from sender — connection termination</td></tr>
+    </table>
+    <div class="note note-exam"><span class="note-label">Exam tip</span> The 6 flags in order: <strong>URG · ACK · PSH · RST · SYN · FIN</strong></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-blue">📐</span> HLEN Field</div>
+    <p>HLEN (Header Length) is 4 bits. Its value × 4 = header size in bytes.</p>
+    <ul class="clean">
+      <li>Minimum value = <strong>5</strong> → 5 × 4 = <strong>20 bytes</strong> (minimum header)</li>
+      <li>Maximum value = <strong>15</strong> → 15 × 4 = <strong>60 bytes</strong> (maximum header)</li>
+    </ul>
+    <div class="note note-exam"><span class="note-label">Exam tip</span> Min header = 20 bytes | Max header = 60 bytes | Options can add up to 40 bytes</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-purple">🔒</span> Pseudoheader & Checksum</div>
+    <p>For checksum calculation, TCP uses a <strong>pseudoheader</strong> — a temporary 12-byte structure that includes the source IP, destination IP, protocol number, and TCP length. This is added before computing the checksum, then discarded.</p>
+    <div class="note note-warn"><span class="note-label">Critical</span> Checksum in TCP is <strong>mandatory</strong>. (In UDP it is optional.)</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 15-4 A TCP CONNECTION -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="connection">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div>
+      <h2>15-4 A TCP Connection</h2>
+      <div class="section-subtitle">Establishment · Data Transfer · Termination</div>
+    </div>
+  </div>
+
+  <div class="purpose">
+    <strong>Purpose:</strong> TCP must establish a <em>virtual</em> connection before sending data, even though the underlying IP layer is connectionless. The connection is managed by TCP itself — if a segment is lost, TCP retransmits it.
+  </div>
+
+  <!-- 3-WAY HANDSHAKE -->
+  <div class="card">
+    <div class="card-title"><span class="icon icon-green">🤝</span> Connection Establishment — 3-Way Handshake</div>
+
+    <div class="analogy">
+      <strong>📞 Analogy:</strong> Like a phone call. You dial (SYN) → they answer "Hello?" (SYN+ACK) → you say "Yes, hello!" (ACK) → conversation begins.
+    </div>
+
+    <div class="handshake">
+      <div class="hs-party">
+        <span class="client-color">CLIENT (Active Open)</span>
+        <span class="server-color">SERVER (Passive Open)</span>
+      </div>
+
+      <div class="hs-row">
+        <div class="hs-client"><span class="hs-label client-color">Step 1: SYN</span><br><small>seq=x, SYN=1, ACK=0<br>"I want to connect.<br>My seq starts at x"</small></div>
+        <div class="hs-arrow">→</div>
+        <div class="hs-server"></div>
+      </div>
+
+      <div class="hs-row">
+        <div class="hs-client"></div>
+        <div class="hs-arrow">←</div>
+        <div class="hs-server"><span class="hs-label server-color">Step 2: SYN+ACK</span><br><small>seq=y, ack=x+1<br>SYN=1, ACK=1<br>"OK! My seq starts at y"</small></div>
+      </div>
+
+      <div class="hs-row">
+        <div class="hs-client"><span class="hs-label client-color">Step 3: ACK</span><br><small>seq=x+1, ack=y+1<br>ACK=1<br>"Great, let's go!"</small></div>
+        <div class="hs-arrow">→</div>
+        <div class="hs-server"></div>
+      </div>
+    </div>
+
+    <div class="note note-key"><span class="note-label">Key facts</span> SYN segment cannot carry data but consumes 1 sequence number. SYN+ACK cannot carry data but consumes 1 sequence number. ACK with no data consumes NO sequence number.</div>
+    <div class="note note-exam"><span class="note-label">Exam tip</span> "3-way" because there are 3 steps: SYN → SYN+ACK → ACK</div>
+  </div>
+
+  <!-- DATA TRANSFER -->
+  <div class="card">
+    <div class="card-title"><span class="icon icon-blue">📤</span> Data Transfer</div>
+    <p>After connection establishment, both sides can send data. TCP uses <strong>piggybacking</strong> — acknowledgments are sent inside data segments going the other direction, saving bandwidth.</p>
+    <ul class="clean">
+      <li>Each data segment is acknowledged by the receiver</li>
+      <li>The ACK number = next byte expected (cumulative)</li>
+      <li>Timers start when a segment is sent; if no ACK within timeout → retransmit</li>
+    </ul>
+  </div>
+
+  <!-- CONNECTION TERMINATION -->
+  <div class="card">
+    <div class="card-title"><span class="icon icon-yellow">🔚</span> Connection Termination — 3-Way Handshake (FIN)</div>
+
+    <div class="handshake">
+      <div class="hs-party">
+        <span class="client-color">CLIENT (Active Close)</span>
+        <span class="server-color">SERVER (Passive Close)</span>
+      </div>
+
+      <div class="hs-row">
+        <div class="hs-client"><span class="hs-label client-color">Step 1: FIN</span><br><small>seq=x, FIN=1<br>"I'm done sending"</small></div>
+        <div class="hs-arrow">→</div>
+        <div class="hs-server"></div>
+      </div>
+
+      <div class="hs-row">
+        <div class="hs-client"></div>
+        <div class="hs-arrow">←</div>
+        <div class="hs-server"><span class="hs-label server-color">Step 2: FIN+ACK</span><br><small>seq=y, ack=x+1<br>"OK, I'm done too"</small></div>
+      </div>
+
+      <div class="hs-row">
+        <div class="hs-client"><span class="hs-label client-color">Step 3: ACK</span><br><small>ack=y+1<br>"Acknowledged, goodbye"</small></div>
+        <div class="hs-arrow">→</div>
+        <div class="hs-server"></div>
+      </div>
+    </div>
+
+    <div class="note note-key"><span class="note-label">Key facts</span> FIN segment consumes 1 seq# if it carries no data. FIN+ACK also consumes 1 seq# if no data.</div>
+  </div>
+
+  <!-- HALF CLOSE -->
+  <div class="card">
+    <div class="card-title"><span class="icon icon-purple">½</span> Half-Close</div>
+    <p>One side can close its sending direction while still receiving data from the other side. The side that sends FIN can still receive data until the other side also sends FIN. This is called a <strong>half-close</strong>.</p>
+    <div class="analogy"><strong>📞 Analogy:</strong> You say "I have nothing more to say" but you still listen until the other person finishes talking.</div>
+  </div>
+
+  <!-- CONNECTION RESET -->
+  <div class="card">
+    <div class="card-title"><span class="icon icon-red">⚡</span> Connection Reset</div>
+    <p>A <strong>RST flag</strong> aborts a connection immediately — no graceful close. Used when an error occurs or an unexpected segment arrives. The connection is discarded with no cleanup.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 15-6 WINDOWS IN TCP -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="windows">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div>
+      <h2>15-6 Windows in TCP</h2>
+      <div class="section-subtitle">Send Window & Receive Window</div>
+    </div>
+  </div>
+
+  <div class="purpose">
+    <strong>Purpose:</strong> TCP uses a <strong>sliding window</strong> mechanism to allow multiple segments to be in transit simultaneously without waiting for each individual ACK. This improves efficiency.
+  </div>
+
+  <div class="analogy">
+    <strong>🪟 Analogy:</strong> Imagine sending 10 letters, but you can only have 3 in the postal system at once. Once one gets delivered (ACK), the window slides forward, and you can send the next one.
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-blue">📤</span> Send Window</div>
+    <p>The send window has three regions based on sequence numbers:</p>
+    <table>
+      <tr><th>Region</th><th>Description</th></tr>
+      <tr><td>Already sent & acknowledged</td><td>Purged — no longer needed</td></tr>
+      <tr><td>Sent but not yet acknowledged</td><td>Outstanding — waiting for ACK</td></tr>
+      <tr><td>Can be sent (within window)</td><td>Ready to send — buffer is available at receiver</td></tr>
+      <tr><td>Cannot send yet</td><td>Beyond window — receiver buffer may be full</td></tr>
+    </table>
+    <div class="note note-exam"><span class="note-label">Exam tip</span> Window size is controlled by the <strong>receiver's advertised window (rwnd)</strong> value in ACK segments.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-green">📥</span> Receive Window</div>
+    <p>The receiver has a buffer. It advertises how many bytes it can currently accept. The sender must respect this limit. The receiver updates rwnd in each ACK.</p>
+    <ul class="clean">
+      <li>If rwnd = 0 → sender must stop sending (zero-window condition)</li>
+      <li>Receiver can increase rwnd as it processes data from its buffer</li>
+    </ul>
+    <div class="note note-warn"><span class="note-label">Warning</span> Window shrinking can cause problems — the receiver should avoid advertising a smaller window than before if possible (see Example 15.2 in slides).</div>
+  </div>
+
+  <div class="facts-grid">
+    <div class="fact-card">
+      <span class="fact-val">rwnd</span>
+      <div class="fact-label">Receive window — buffer space at receiver</div>
+    </div>
+    <div class="fact-card">
+      <span class="fact-val">cwnd</span>
+      <div class="fact-label">Congestion window — network capacity limit</div>
+    </div>
+    <div class="fact-card">
+      <span class="fact-val">min(rwnd, cwnd)</span>
+      <div class="fact-label">Actual send window = smaller of both</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 15-7 FLOW CONTROL -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="flow">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div>
+      <h2>15-7 Flow Control</h2>
+      <div class="section-subtitle">Matching sender speed to receiver capacity</div>
+    </div>
+  </div>
+
+  <div class="purpose">
+    <strong>Purpose:</strong> Flow control prevents a fast sender from sending more data than a slow receiver can handle. It is end-to-end control (between sender and receiver), NOT network-level control.
+  </div>
+
+  <div class="analogy">
+    <strong>🍽️ Analogy:</strong> A waiter (sender) filling a plate (receiver buffer). If the plate is getting full, the diner says "slow down." The waiter only pours as fast as the diner can eat.
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-blue">📏</span> Opening and Closing Windows</div>
+    <p>The receiver controls the send window by changing the <strong>rwnd</strong> value in ACK segments:</p>
+    <ul class="clean">
+      <li><strong>Opening</strong> the window: receiver increases rwnd as it consumes data → sender can send more</li>
+      <li><strong>Closing</strong> the window: receiver decreases rwnd as its buffer fills → sender must slow down</li>
+      <li><strong>Zero window</strong>: rwnd = 0 → sender must stop. Sender sends periodic "probe" segments to check if window reopens</li>
+    </ul>
+    <div class="note note-exam"><span class="note-label">Exam tip</span> The receiver controls flow by adjusting rwnd. It does NOT control the sender directly — it only tells the sender how much buffer space is available.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-red">⚠️</span> Shrinking of Windows</div>
+    <p>Window shrinking happens when: <code>LastACK + new_rwnd &lt; LastACK + old_rwnd</code></p>
+    <p style="margin-top:8px;">This can cause a problem: bytes already sent may fall outside the new window boundary. The recommended solution: the receiver should <strong>delay sending feedback</strong> until enough buffer space is available.</p>
+    <div class="note note-warn"><span class="note-label">Rule</span> The right edge of the window should not move backward. Avoid shrinking windows.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 15-8 ERROR CONTROL -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="error">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div>
+      <h2>15-8 Error Control</h2>
+      <div class="section-subtitle">Detecting and correcting lost/corrupted segments</div>
+    </div>
+  </div>
+
+  <div class="purpose">
+    <strong>Purpose:</strong> TCP guarantees that all data arrives correctly and in order. Error control uses three tools: <strong>checksum</strong>, <strong>acknowledgment</strong>, and <strong>timers</strong>.
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-blue">🔧</span> Three Tools of Error Control</div>
+    <table>
+      <tr><th>Tool</th><th>Purpose</th><th>How it works</th></tr>
+      <tr><td><strong>Checksum</strong></td><td>Detects corruption</td><td>Receiver checks; if bad → discards segment silently</td></tr>
+      <tr><td><strong>ACK Number</strong></td><td>Confirms receipt</td><td>Tells sender next expected byte; cumulative</td></tr>
+      <tr><td><strong>Timer / Timeout</strong></td><td>Detects lost segments</td><td>If no ACK before timeout → retransmit segment</td></tr>
+    </table>
+    <div class="note note-key"><span class="note-label">Key</span> TCP receiver delivers only <strong>ordered data</strong> to the application. Out-of-order segments are held in buffer until gaps are filled.</div>
+  </div>
+
+  <!-- 6 ACK RULES -->
+  <div class="card">
+    <div class="card-title"><span class="icon icon-green">📋</span> 6 Rules for Generating ACKs</div>
+
+    <div style="display:grid; gap:10px; margin-top:8px;">
+      <div style="display:flex; gap:12px; align-items:flex-start; background:var(--surface); padding:12px 14px; border-radius:9px;">
+        <div style="background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; font-weight:700; font-size:12px; min-width:26px; height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center;">1</div>
+        <div><strong style="color:var(--accent)">Piggybacking:</strong> When A sends data to B, it includes an ACK for what B sent. Reduces total segment count.</div>
+      </div>
+      <div style="display:flex; gap:12px; align-items:flex-start; background:var(--surface); padding:12px 14px; border-radius:9px;">
+        <div style="background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; font-weight:700; font-size:12px; min-width:26px; height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center;">2</div>
+        <div><strong style="color:var(--accent)">Delayed ACK:</strong> If only 1 in-order segment is outstanding (previous already ACKed), delay the ACK up to <strong>500 ms</strong> waiting for another segment or data to piggyback on. Reduces ACK traffic.</div>
+      </div>
+      <div style="display:flex; gap:12px; align-items:flex-start; background:var(--surface); padding:12px 14px; border-radius:9px;">
+        <div style="background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; font-weight:700; font-size:12px; min-width:26px; height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center;">3</div>
+        <div><strong style="color:var(--accent)">Two in-order, unACKed:</strong> If a second in-order segment arrives and the first isn't acknowledged yet → send ACK immediately. At most 2 in-order unACKed segments allowed.</div>
+      </div>
+      <div style="display:flex; gap:12px; align-items:flex-start; background:var(--surface); padding:12px 14px; border-radius:9px;">
+        <div style="background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; font-weight:700; font-size:12px; min-width:26px; height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center;">4</div>
+        <div><strong style="color:var(--accent)">Out-of-order (gap detected):</strong> If a segment arrives with seq# higher than expected (a gap exists) → send duplicate ACK immediately for the last in-order segment received. This triggers <strong>fast retransmission</strong>.</div>
+      </div>
+      <div style="display:flex; gap:12px; align-items:flex-start; background:var(--surface); padding:12px 14px; border-radius:9px;">
+        <div style="background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; font-weight:700; font-size:12px; min-width:26px; height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center;">5</div>
+        <div><strong style="color:var(--accent)">Missing segment arrives:</strong> When the missing segment finally arrives → send ACK for the next expected byte to confirm gap is filled.</div>
+      </div>
+      <div style="display:flex; gap:12px; align-items:flex-start; background:var(--surface); padding:12px 14px; border-radius:9px;">
+        <div style="background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; font-weight:700; font-size:12px; min-width:26px; height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center;">6</div>
+        <div><strong style="color:var(--accent)">Duplicate segment:</strong> If the same segment arrives twice → discard it, but immediately send ACK for next expected byte. Solves cases where the ACK itself was lost.</div>
+      </div>
+    </div>
+    <div class="note note-exam"><span class="note-label">Exam tip</span> Delayed ACK waits max <strong>500 ms</strong>. Fast retransmission is triggered by <strong>3 duplicate ACKs</strong> (you receive the original ACK + 3 more for same seq# = 4 total).</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-yellow">⚡</span> Fast Retransmission</div>
+    <p>If the sender receives <strong>3 duplicate ACKs</strong> (all requesting the same sequence number), it retransmits the missing segment <em>immediately</em>, without waiting for the timeout. This is much faster than waiting for a timer.</p>
+    <div class="flow">
+      <div class="flow-box">Seg 1 ✓</div>
+      <span class="arrow">→</span>
+      <div class="flow-box red-box">Seg 2 ✗ LOST</div>
+      <span class="arrow">→</span>
+      <div class="flow-box">Seg 3 arrives</div>
+      <span class="arrow">→</span>
+      <div class="flow-box highlight">Dup ACK for Seg 1</div>
+      <span class="arrow">→</span>
+      <div class="flow-box green-box">Retransmit Seg 2!</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-red">❌</span> Lost Acknowledgment Problem</div>
+    <p>If an ACK is lost, the sender will retransmit the segment. The receiver gets a duplicate segment but handles it using <strong>Rule 6</strong>: discard and send ACK again.</p>
+    <div class="note note-warn"><span class="note-label">Critical Note</span> Lost acknowledgments may create <strong>deadlock</strong> if not properly handled (e.g., zero-window probe segments solve this).</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 15-9 CONGESTION CONTROL -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="congestion">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <div>
+      <h2>15-9 Congestion Control</h2>
+      <div class="section-subtitle">Preventing network overload</div>
+    </div>
+  </div>
+
+  <div class="purpose">
+    <strong>Purpose:</strong> Unlike flow control (which protects the receiver), congestion control protects the <strong>network</strong>. When too many senders send too much data, routers drop packets. TCP detects this and reduces its sending rate.
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-blue">🔄</span> Open-Loop vs Closed-Loop</div>
+    <table>
+      <tr><th>Type</th><th>Meaning</th></tr>
+      <tr><td><strong>Open-Loop</strong></td><td>Prevent congestion before it happens (proactive)</td></tr>
+      <tr><td><strong>Closed-Loop</strong></td><td>Detect and respond to congestion after it starts (reactive)</td></tr>
+    </table>
+    <div class="note note-key"><span class="note-label">Key</span> TCP uses <strong>both</strong> open-loop and closed-loop congestion control mechanisms.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-green">📈</span> Congestion Window (cwnd)</div>
+    <p>TCP maintains a <strong>congestion window (cwnd)</strong>. The actual window a sender uses = <code>min(rwnd, cwnd)</code>.</p>
+    <ul class="clean">
+      <li><strong>Slow Start:</strong> Begin with cwnd = 1 MSS; double cwnd every RTT (exponential growth)</li>
+      <li><strong>Congestion Avoidance:</strong> When cwnd reaches ssthresh, increase by 1 MSS per RTT (linear growth)</li>
+      <li><strong>Congestion Detection:</strong> If timeout → cwnd = 1, ssthresh = half of cwnd. If 3 dup ACKs → ssthresh = half, cwnd = ssthresh (fast recovery)</li>
+    </ul>
+    <div class="note note-exam"><span class="note-label">Exam tip</span> Slow Start is <strong>exponential</strong> growth. Congestion Avoidance is <strong>linear (additive)</strong> growth. This is called AIMD (Additive Increase Multiplicative Decrease).</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 15-11 OPTIONS -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="options">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <div>
+      <h2>15-11 TCP Options</h2>
+      <div class="section-subtitle">Optional header extensions</div>
+    </div>
+  </div>
+
+  <div class="purpose">
+    <strong>Purpose:</strong> TCP header can have up to <strong>40 bytes</strong> of optional information. Options extend TCP's capabilities beyond the basic header.
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-blue">📋</span> Two Categories of Options</div>
+    <table>
+      <tr><th>Category</th><th>Types</th></tr>
+      <tr><td><strong>1-byte options</strong></td><td>End of Option List, No Operation (padding)</td></tr>
+      <tr><td><strong>Multiple-byte options</strong></td><td>Maximum Segment Size (MSS), Window Scale Factor, Timestamp, SACK-Permitted, SACK</td></tr>
+    </table>
+
+    <div style="display:grid; gap:10px; margin-top:14px;">
+      <div class="card" style="margin:0; background:var(--surface);">
+        <div class="card-title" style="font-size:13.5px; margin-bottom:6px;"><span class="icon icon-accent" style="background:rgba(79,142,247,0.2)">📏</span> MSS — Maximum Segment Size</div>
+        <p style="font-size:13.5px;">Specifies the largest segment TCP will accept. Negotiated during 3-way handshake (in SYN segments). Default = 536 bytes if not specified.</p>
+      </div>
+      <div class="card" style="margin:0; background:var(--surface);">
+        <div class="card-title" style="font-size:13.5px; margin-bottom:6px;"><span class="icon icon-green">🪟</span> Window Scale Factor</div>
+        <p style="font-size:13.5px;">Extends window size beyond 65,535 bytes (the 16-bit limit). Shifts the window value left by a scale factor (multiplier). Important for high-speed networks.</p>
+      </div>
+      <div class="card" style="margin:0; background:var(--surface);">
+        <div class="card-title" style="font-size:13.5px; margin-bottom:6px;"><span class="icon icon-yellow">⏱️</span> Timestamp</div>
+        <p style="font-size:13.5px;">Used to measure RTT (Round-Trip Time) accurately and to handle sequence number wraparound on very fast links (PAWS — Protection Against Wrapped Sequence numbers).</p>
+      </div>
+      <div class="card" style="margin:0; background:var(--surface);">
+        <div class="card-title" style="font-size:13.5px; margin-bottom:6px;"><span class="icon icon-purple">✅</span> SACK & SACK-Permitted</div>
+        <p style="font-size:13.5px;">SACK = Selective Acknowledgment. Allows receiver to tell sender exactly which bytes were received, so only the truly missing segments are retransmitted (more efficient than retransmitting everything after the loss).</p>
+      </div>
+    </div>
+    <div class="note note-exam"><span class="note-label">Exam tip</span> 5 types of multiple-byte options: <strong>MSS · Window Scale · Timestamp · SACK-Permitted · SACK</strong></div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- QUICK REFERENCE -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="quickref">
+  <div class="section-header">
+    <div class="section-num">★</div>
+    <div>
+      <h2>Quick Reference — Numbers to Memorize</h2>
+      <div class="section-subtitle">Most likely to appear in MCQ or Fill-in-the-blank</div>
+    </div>
+  </div>
+
+  <div class="facts-grid">
+    <div class="fact-card"><span class="fact-val">20</span><div class="fact-label">Min TCP header size (bytes)</div></div>
+    <div class="fact-card"><span class="fact-val">60</span><div class="fact-label">Max TCP header size (bytes)</div></div>
+    <div class="fact-card"><span class="fact-val">40</span><div class="fact-label">Max options field size (bytes)</div></div>
+    <div class="fact-card"><span class="fact-val">32</span><div class="fact-label">Bits in Seq# / ACK# fields</div></div>
+    <div class="fact-card"><span class="fact-val">16</span><div class="fact-label">Bits in Port / Window / Checksum fields</div></div>
+    <div class="fact-card"><span class="fact-val">6</span><div class="fact-label">Control flag bits (URG·ACK·PSH·RST·SYN·FIN)</div></div>
+    <div class="fact-card"><span class="fact-val">4</span><div class="fact-label">Bits in HLEN field</div></div>
+    <div class="fact-card"><span class="fact-val">500ms</span><div class="fact-label">Max delay for delayed ACK</div></div>
+    <div class="fact-card"><span class="fact-val">3</span><div class="fact-label">Steps in both 3-way handshakes (open & close)</div></div>
+    <div class="fact-card"><span class="fact-val">12</span><div class="fact-label">Bytes in pseudoheader for checksum</div></div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- MCQ PRACTICE -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="mcq">
+  <div class="section-header">
+    <div class="section-num">Q</div>
+    <div>
+      <h2>MCQ Practice</h2>
+      <div class="section-subtitle">Click an option to check your answer</div>
+    </div>
+  </div>
+
+  <div class="score-box">
+    <div class="score-num" id="mcqScore">0 / 15</div>
+    <div class="score-label">MCQ Score</div>
+  </div>
+
+  <div class="mcq-set" id="mcqSet">
+
+    <div class="mcq-item" data-answer="b">
+      <div class="mcq-q"><span>Q1.</span> TCP lies between which two layers?</div>
+      <div class="options">
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">A</span> Physical layer and Data Link layer</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">B</span> Application layer and Network layer</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">C</span> Network layer and Physical layer</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">D</span> Transport layer and Session layer</div>
+      </div>
+      <div class="mcq-result" id="res-0"></div>
+    </div>
+
+    <div class="mcq-item" data-answer="c">
+      <div class="mcq-q"><span>Q2.</span> What does the sequence number in a TCP segment represent?</div>
+      <div class="options">
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">A</span> The total number of bytes in the segment</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">B</span> The number of the last byte in the segment</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">C</span> The number assigned to the first data byte in the segment</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">D</span> The segment number (1st, 2nd, 3rd…)</div>
+      </div>
+      <div class="mcq-result" id="res-1"></div>
+    </div>
+
+    <div class="mcq-item" data-answer="a">
+      <div class="mcq-q"><span>Q3.</span> TCP numbering starts with…</div>
+      <div class="options">
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">A</span> An arbitrarily generated random number</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">B</span> Always 0</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">C</span> Always 1</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">D</span> The port number of the sender</div>
+      </div>
+      <div class="mcq-result" id="res-2"></div>
+    </div>
+
+    <div class="mcq-item" data-answer="b">
+      <div class="mcq-q"><span>Q4.</span> What does the acknowledgment number in a TCP segment represent?</div>
+      <div class="options">
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">A</span> The last byte successfully received</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">B</span> The next byte the receiver expects</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">C</span> The number of segments received so far</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">D</span> The window size</div>
+      </div>
+      <div class="mcq-result" id="res-3"></div>
+    </div>
+
+    <div class="mcq-item" data-answer="d">
+      <div class="mcq-q"><span>Q5.</span> What is the minimum TCP header size?</div>
+      <div class="options">
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">A</span> 10 bytes</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">B</span> 16 bytes</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">C</span> 40 bytes</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">D</span> 20 bytes</div>
+      </div>
+      <div class="mcq-result" id="res-4"></div>
+    </div>
+
+    <div class="mcq-item" data-answer="c">
+      <div class="mcq-q"><span>Q6.</span> A SYN segment in TCP's 3-way handshake…</div>
+      <div class="options">
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">A</span> Can carry data and consumes one sequence number</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">B</span> Can carry data but consumes no sequence number</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">C</span> Cannot carry data but consumes one sequence number</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">D</span> Cannot carry data and consumes no sequence number</div>
+      </div>
+      <div class="mcq-result" id="res-5"></div>
+    </div>
+
+    <div class="mcq-item" data-answer="a">
+      <div class="mcq-q"><span>Q7.</span> An ACK segment carrying no data…</div>
+      <div class="options">
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">A</span> Consumes no sequence number</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">B</span> Consumes one sequence number</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">C</span> Consumes two sequence numbers</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">D</span> Depends on the window size</div>
+      </div>
+      <div class="mcq-result" id="res-6"></div>
+    </div>
+
+    <div class="mcq-item" data-answer="b">
+      <div class="mcq-q"><span>Q8.</span> The checksum in TCP is…</div>
+      <div class="options">
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">A</span> Optional, like in UDP</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">B</span> Mandatory</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">C</span> Only used when URG flag is set</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">D</span> Calculated from data only, not the header</div>
+      </div>
+      <div class="mcq-result" id="res-7"></div>
+    </div>
+
+    <div class="mcq-item" data-answer="c">
+      <div class="mcq-q"><span>Q9.</span> Flow control in TCP protects the…</div>
+      <div class="options">
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">A</span> Network from congestion</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">B</span> Sender from sending too fast for itself</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">C</span> Receiver from being overwhelmed by a fast sender</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">D</span> Router queues from overflowing</div>
+      </div>
+      <div class="mcq-result" id="res-8"></div>
+    </div>
+
+    <div class="mcq-item" data-answer="d">
+      <div class="mcq-q"><span>Q10.</span> According to ACK generation rules, the delayed ACK waits at most…</div>
+      <div class="options">
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">A</span> 200 ms</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">B</span> 1000 ms</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">C</span> 100 ms</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">D</span> 500 ms</div>
+      </div>
+      <div class="mcq-result" id="res-9"></div>
+    </div>
+
+    <div class="mcq-item" data-answer="a">
+      <div class="mcq-q"><span>Q11.</span> Fast retransmission is triggered by…</div>
+      <div class="options">
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">A</span> Receiving 3 duplicate ACKs</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">B</span> A retransmission timeout</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">C</span> The receiver's window reaching 0</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">D</span> The FIN flag being set</div>
+      </div>
+      <div class="mcq-result" id="res-10"></div>
+    </div>
+
+    <div class="mcq-item" data-answer="b">
+      <div class="mcq-q"><span>Q12.</span> The maximum size of the TCP options field is…</div>
+      <div class="options">
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">A</span> 20 bytes</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">B</span> 40 bytes</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">C</span> 60 bytes</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">D</span> 16 bytes</div>
+      </div>
+      <div class="mcq-result" id="res-11"></div>
+    </div>
+
+    <div class="mcq-item" data-answer="c">
+      <div class="mcq-q"><span>Q13.</span> TCP congestion control uses which type(s) of mechanism?</div>
+      <div class="options">
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">A</span> Only open-loop</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">B</span> Only closed-loop</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">C</span> Both open-loop and closed-loop</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">D</span> Neither — TCP doesn't handle congestion</div>
+      </div>
+      <div class="mcq-result" id="res-12"></div>
+    </div>
+
+    <div class="mcq-item" data-answer="d">
+      <div class="mcq-q"><span>Q14.</span> Which flag is used to abruptly abort a TCP connection?</div>
+      <div class="options">
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">A</span> FIN</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">B</span> SYN</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">C</span> URG</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">D</span> RST</div>
+      </div>
+      <div class="mcq-result" id="res-13"></div>
+    </div>
+
+    <div class="mcq-item" data-answer="a">
+      <div class="mcq-q"><span>Q15.</span> The actual send window used by TCP equals…</div>
+      <div class="options">
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">A</span> min(rwnd, cwnd)</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">B</span> max(rwnd, cwnd)</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">C</span> rwnd + cwnd</div>
+        <div class="opt" onclick="checkMCQ(this)"><span class="opt-letter">D</span> rwnd only</div>
+      </div>
+      <div class="mcq-result" id="res-14"></div>
+    </div>
+
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- FILL IN THE BLANKS -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="fill">
+  <div class="section-header">
+    <div class="section-num">F</div>
+    <div>
+      <h2>Fill in the Blanks</h2>
+      <div class="section-subtitle">Type your answer and click Check</div>
+    </div>
+  </div>
+
+  <div id="fillSet">
+
+    <div class="fill-item">
+      <div class="fill-q">1. A packet in TCP is called a <input class="blank-input" data-answer="segment" placeholder="?"> .</div>
+      <button class="check-btn" onclick="checkFill(this)">Check</button>
+      <div class="fill-feedback"></div>
+    </div>
+
+    <div class="fill-item">
+      <div class="fill-q">2. TCP numbering starts with an <input class="blank-input" data-answer="arbitrarily" placeholder="?"> generated number.</div>
+      <button class="check-btn" onclick="checkFill(this)">Check</button>
+      <div class="fill-feedback"></div>
+    </div>
+
+    <div class="fill-item">
+      <div class="fill-q">3. The value in the sequence number field defines the number assigned to the <input class="blank-input" data-answer="first" placeholder="?"> data byte in the segment.</div>
+      <button class="check-btn" onclick="checkFill(this)">Check</button>
+      <div class="fill-feedback"></div>
+    </div>
+
+    <div class="fill-item">
+      <div class="fill-q">4. The acknowledgment number defines the number of the <input class="blank-input" data-answer="next" placeholder="?"> byte a party expects to receive.</div>
+      <button class="check-btn" onclick="checkFill(this)">Check</button>
+      <div class="fill-feedback"></div>
+    </div>
+
+    <div class="fill-item">
+      <div class="fill-q">5. The use of the checksum in TCP is <input class="blank-input" data-answer="mandatory" placeholder="?"> .</div>
+      <button class="check-btn" onclick="checkFill(this)">Check</button>
+      <div class="fill-feedback"></div>
+    </div>
+
+    <div class="fill-item">
+      <div class="fill-q">6. A SYN segment cannot carry data, but it consumes <input class="blank-input" data-answer="one" placeholder="?"> sequence number.</div>
+      <button class="check-btn" onclick="checkFill(this)">Check</button>
+      <div class="fill-feedback"></div>
+    </div>
+
+    <div class="fill-item">
+      <div class="fill-q">7. An ACK segment, if carrying no data, consumes <input class="blank-input" data-answer="no" placeholder="?"> sequence number.</div>
+      <button class="check-btn" onclick="checkFill(this)">Check</button>
+      <div class="fill-feedback"></div>
+    </div>
+
+    <div class="fill-item">
+      <div class="fill-q">8. The receiver TCP delivers only <input class="blank-input" data-answer="ordered" placeholder="?"> data to the process.</div>
+      <button class="check-btn" onclick="checkFill(this)">Check</button>
+      <div class="fill-feedback"></div>
+    </div>
+
+    <div class="fill-item">
+      <div class="fill-q">9. Lost acknowledgments may create <input class="blank-input" data-answer="deadlock" placeholder="?"> if they are not properly handled.</div>
+      <button class="check-btn" onclick="checkFill(this)">Check</button>
+      <div class="fill-feedback"></div>
+    </div>
+
+    <div class="fill-item">
+      <div class="fill-q">10. The TCP header can have up to <input class="blank-input" data-answer="40" placeholder="?"> bytes of optional information.</div>
+      <button class="check-btn" onclick="checkFill(this)">Check</button>
+      <div class="fill-feedback"></div>
+    </div>
+
+    <div class="fill-item">
+      <div class="fill-q">11. A FIN segment consumes one sequence number if it does not carry <input class="blank-input" data-answer="data" placeholder="?"> .</div>
+      <button class="check-btn" onclick="checkFill(this)">Check</button>
+      <div class="fill-feedback"></div>
+    </div>
+
+    <div class="fill-item">
+      <div class="fill-q">12. The minimum TCP header size is <input class="blank-input" data-answer="20" placeholder="?"> bytes and the maximum is <input class="blank-input" data-answer="60" placeholder="?"> bytes.</div>
+      <button class="check-btn" onclick="checkFill(this)">Check</button>
+      <div class="fill-feedback"></div>
+    </div>
+
+    <div class="fill-item">
+      <div class="fill-q">13. The delayed ACK rule says to wait at most <input class="blank-input" data-answer="500" placeholder="?"> ms before sending an ACK.</div>
+      <button class="check-btn" onclick="checkFill(this)">Check</button>
+      <div class="fill-feedback"></div>
+    </div>
+
+    <div class="fill-item">
+      <div class="fill-q">14. TCP uses both <input class="blank-input" data-answer="open" placeholder="?"> loop and <input class="blank-input" data-answer="closed" placeholder="?"> loop mechanisms for congestion control.</div>
+      <button class="check-btn" onclick="checkFill(this)">Check</button>
+      <div class="fill-feedback"></div>
+    </div>
+
+    <div class="fill-item">
+      <div class="fill-q">15. The actual effective send window = min(<input class="blank-input" data-answer="rwnd" placeholder="?">, <input class="blank-input" data-answer="cwnd" placeholder="?">).</div>
+      <button class="check-btn" onclick="checkFill(this)">Check</button>
+      <div class="fill-feedback"></div>
+    </div>
+
+  </div>
+</div>
+
+</main>
+
+<script>
+// Progress bar
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scrolled = doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = scrolled + '%';
+});
+
+// MCQ Logic
+let mcqCorrect = 0;
+let mcqAnswered = 0;
+const totalMCQ = 15;
+
+function checkMCQ(clickedOpt) {
+  const item = clickedOpt.closest('.mcq-item');
+  if (item.dataset.done) return;
+  item.dataset.done = true;
+
+  const correctLetter = item.dataset.answer;
+  const opts = item.querySelectorAll('.opt');
+  const letters = ['a','b','c','d'];
+
+  let isCorrect = false;
+  opts.forEach((opt, i) => {
+    if (letters[i] === correctLetter) {
+      opt.classList.add('correct');
+    }
+  });
+
+  const clickedIndex = Array.from(opts).indexOf(clickedOpt);
+  if (letters[clickedIndex] === correctLetter) {
+    isCorrect = true;
+  } else {
+    clickedOpt.classList.add('wrong');
+  }
+
+  mcqAnswered++;
+  if (isCorrect) mcqCorrect++;
+
+  const resultId = 'res-' + (Array.from(document.querySelectorAll('.mcq-item')).indexOf(item));
+  const resEl = document.getElementById(resultId);
+  if (resEl) {
+    resEl.textContent = isCorrect ? '✓ Correct!' : `✗ Wrong. The correct answer is (${correctLetter.toUpperCase()}).`;
+    resEl.className = 'mcq-result show ' + (isCorrect ? 'ok' : 'fail');
+  }
+
+  document.getElementById('mcqScore').textContent = mcqCorrect + ' / ' + totalMCQ;
+}
+
+// Fill in the blanks logic
+function checkFill(btn) {
+  const item = btn.closest('.fill-item');
+  const inputs = item.querySelectorAll('.blank-input');
+  const feedback = item.querySelector('.fill-feedback');
+
+  let allCorrect = true;
+  let wrongAnswers = [];
+
+  inputs.forEach(inp => {
+    const userVal = inp.value.trim().toLowerCase();
+    const correctVal = inp.dataset.answer.toLowerCase();
+    // Accept partial match for "arbitrarily" etc.
+    const isOk = userVal === correctVal || correctVal.startsWith(userVal) && userVal.length >= 3;
+    if (userVal === correctVal) {
+      inp.classList.remove('wrong-fill');
+      inp.classList.add('correct-fill');
+    } else {
+      inp.classList.remove('correct-fill');
+      inp.classList.add('wrong-fill');
+      allCorrect = false;
+      wrongAnswers.push(inp.dataset.answer);
+    }
+  });
+
+  feedback.className = 'fill-feedback show ' + (allCorrect ? 'note note-key' : 'note note-warn');
+  feedback.innerHTML = allCorrect
+    ? '<span class="note-label">✓ Correct!</span> Great job!'
+    : `<span class="note-label">✗ Check again</span> Correct answer(s): <strong>${wrongAnswers.join(', ')}</strong>`;
+}
+</script>
+
+</body>
+</html>

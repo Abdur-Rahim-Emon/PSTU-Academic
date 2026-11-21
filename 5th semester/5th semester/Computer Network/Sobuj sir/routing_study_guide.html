@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Routing Protocols – Study Guide (Slides 9–30)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&display=swap');
+
+  :root {
+    --navy: #0d1b2a;
+    --blue: #1a3a5c;
+    --teal: #0e7c86;
+    --gold: #e8b64b;
+    --light: #f0f4f8;
+    --white: #ffffff;
+    --text: #1a2535;
+    --muted: #5a6a7e;
+    --green: #1a7a4a;
+    --red: #b03a2e;
+    --purple: #5e35b1;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--light);
+    color: var(--text);
+    line-height: 1.75;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 60%, var(--teal) 100%);
+    color: var(--white);
+    padding: 60px 40px 50px;
+    text-align: center;
+  }
+  .hero .badge {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--navy);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.6rem;
+    font-weight: 900;
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+  .hero p {
+    font-size: 1.05rem;
+    opacity: 0.85;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  /* ROADMAP */
+  .roadmap {
+    background: var(--white);
+    border-bottom: 3px solid var(--gold);
+    padding: 28px 40px;
+  }
+  .roadmap h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--teal);
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+  }
+  .roadmap-steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .roadmap-steps .step {
+    background: var(--light);
+    border: 1.5px solid #d0dce8;
+    border-radius: 8px;
+    padding: 7px 15px;
+    font-size: 0.88rem;
+    color: var(--blue);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .roadmap-steps .step .num {
+    background: var(--teal);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* MAIN LAYOUT */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* TOPIC CARD */
+  .topic {
+    background: var(--white);
+    border-radius: 14px;
+    box-shadow: 0 2px 18px rgba(13,27,42,0.07);
+    margin-bottom: 36px;
+    overflow: hidden;
+    border-left: 6px solid var(--teal);
+    transition: box-shadow 0.2s;
+  }
+  .topic:hover { box-shadow: 0 6px 32px rgba(13,27,42,0.13); }
+  .topic.blue-accent { border-left-color: var(--blue); }
+  .topic.gold-accent { border-left-color: var(--gold); }
+  .topic.green-accent { border-left-color: var(--green); }
+  .topic.red-accent  { border-left-color: var(--red); }
+  .topic.purple-accent { border-left-color: var(--purple); }
+
+  .topic-header {
+    padding: 22px 28px 14px;
+    border-bottom: 1px solid #e8edf3;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .topic-icon {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .topic-header-text {}
+  .slide-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .topic-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.25;
+  }
+  .topic-purpose {
+    font-size: 0.95rem;
+    color: var(--teal);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  .topic-body { padding: 20px 28px 26px; }
+  .topic-body p { margin-bottom: 13px; font-size: 0.97rem; }
+  .topic-body p:last-child { margin-bottom: 0; }
+
+  /* SECTION LABELS */
+  .label {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  .label.desc { background: #e0f0f5; color: var(--teal); }
+  .label.example { background: #fef3dc; color: #9a6800; }
+  .label.mcq { background: #e8f5e9; color: var(--green); }
+  .label.tip { background: #f3e5f5; color: var(--purple); }
+  .label.key { background: #fce4e4; color: var(--red); }
+
+  /* CONTENT BLOCKS */
+  .info-box {
+    background: var(--light);
+    border-radius: 9px;
+    padding: 15px 18px;
+    margin: 14px 0;
+    font-size: 0.94rem;
+  }
+  .info-box.example-box { background: #fffbf0; border-left: 4px solid var(--gold); }
+  .info-box.mcq-box { background: #f0faf3; border-left: 4px solid var(--green); }
+  .info-box.tip-box { background: #f5f0ff; border-left: 4px solid var(--purple); }
+  .info-box.key-box { background: #fff5f5; border-left: 4px solid var(--red); }
+
+  .info-box ul { padding-left: 18px; }
+  .info-box ul li { margin-bottom: 5px; }
+  .info-box ol { padding-left: 20px; }
+  .info-box ol li { margin-bottom: 6px; }
+
+  /* TABLE */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.91rem;
+    margin: 12px 0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  thead tr { background: var(--navy); color: white; }
+  thead th { padding: 10px 14px; text-align: left; font-weight: 700; }
+  tbody tr:nth-child(even) { background: #f2f6fa; }
+  tbody td { padding: 9px 14px; border-bottom: 1px solid #dde4ec; }
+
+  /* DIJKSTRA STEPS */
+  .dijk-step {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .dijk-num {
+    background: var(--teal);
+    color: white;
+    border-radius: 50%;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .dijk-content { flex: 1; font-size: 0.95rem; }
+  .dijk-content strong { color: var(--navy); }
+
+  /* FORMULA BOX */
+  .formula {
+    background: var(--navy);
+    color: var(--gold);
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    padding: 12px 18px;
+    border-radius: 8px;
+    margin: 10px 0;
+    overflow-x: auto;
+  }
+
+  /* HIGHLIGHT WORD */
+  mark { background: #fff0b3; padding: 1px 3px; border-radius: 3px; color: var(--navy); }
+  strong { color: var(--navy); }
+
+  /* DIVIDER */
+  .section-divider {
+    text-align: center;
+    margin: 40px 0 30px;
+    color: var(--muted);
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-divider::before, .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #d0dce8;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--navy);
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    padding: 22px;
+    font-size: 0.82rem;
+  }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.8rem; }
+    .hero, .roadmap { padding: 30px 18px; }
+    .container { padding: 28px 14px 60px; }
+    .topic-header, .topic-body { padding: 16px 16px; }
+    .roadmap-steps .step { font-size: 0.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge">Chapter 5 · Slides 9–30</div>
+  <h1>Routing Protocols<br>& Dijkstra's Algorithm</h1>
+  <p>Your personal teacher's guide — explained step by step, in the simplest way possible, ready for MCQs and fill-in-the-blanks.</p>
+</div>
+
+<!-- TOPIC ROADMAP -->
+<div class="roadmap">
+  <h2>📌 Topics in Order (How They Connect)</h2>
+  <div class="roadmap-steps">
+    <div class="step"><span class="num">1</span> What is Routing?</div>
+    <div class="step"><span class="num">2</span> Graph &amp; Link Costs</div>
+    <div class="step"><span class="num">3</span> Routing Algorithm Types</div>
+    <div class="step"><span class="num">4</span> Dijkstra's Algorithm (Concept)</div>
+    <div class="step"><span class="num">5</span> Dijkstra's: Step-by-Step Example</div>
+    <div class="step"><span class="num">6</span> Forwarding Table Result</div>
+    <div class="step"><span class="num">7</span> Algorithm Complexity</div>
+    <div class="step"><span class="num">8</span> Oscillation Problem</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- TOPIC 1 -->
+  <div class="topic">
+    <div class="topic-header">
+      <div class="topic-icon">🗺️</div>
+      <div class="topic-header-text">
+        <div class="slide-tag">Slide 9</div>
+        <div class="topic-title">What is a Routing Protocol?</div>
+        <div class="topic-purpose">Purpose: Decide the best path for data to travel across the internet</div>
+      </div>
+    </div>
+    <div class="topic-body">
+      <div class="label desc">Simple Description</div>
+      <p>Imagine you want to send a letter from Dhaka to London. There are many roads and flights. Someone must decide: <em>which path is fastest? Which is cheapest?</em> In networking, <strong>routing protocols</strong> do exactly this — they find the best path for data packets to travel from one computer (source) to another (destination) across many routers.</p>
+      <div class="info-box">
+        <ul>
+          <li><strong>Path</strong> = the sequence of routers a packet travels through from source to destination.</li>
+          <li><strong>"Good" path</strong> means: least cost, fastest, or least congested (not stuck in traffic).</li>
+          <li>Routing is considered a <mark>"top-10" networking challenge</mark> because it is very complex.</li>
+        </ul>
+      </div>
+      <div class="info-box mcq-box">
+        <span class="label mcq">MCQ / Fill-in-the-blank Ready</span>
+        <ul>
+          <li>A <strong>routing protocol</strong> determines _____ paths from sending hosts to receiving hosts. <em>(Answer: "good" / least-cost)</em></li>
+          <li>A <strong>path</strong> is the sequence of _____ a packet passes through. <em>(Answer: routers)</em></li>
+          <li>"Good" path can mean: least _____, fastest, or least _____. <em>(Answer: cost; congested)</em></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOPIC 2 -->
+  <div class="topic blue-accent">
+    <div class="topic-header">
+      <div class="topic-icon">🕸️</div>
+      <div class="topic-header-text">
+        <div class="slide-tag">Slide 10</div>
+        <div class="topic-title">Graph Abstraction &amp; Link Costs</div>
+        <div class="topic-purpose">Purpose: Represent the network as a math graph so we can calculate shortest paths</div>
+      </div>
+    </div>
+    <div class="topic-body">
+      <div class="label desc">Simple Description</div>
+      <p>We model the internet as a <strong>graph</strong>. Think of it like a map where cities are routers and roads between them have distances (costs).</p>
+      <div class="info-box">
+        <ul>
+          <li><strong>G = (N, E)</strong> where:
+            <ul>
+              <li><strong>N</strong> = set of <em>nodes</em> (routers): e.g. { u, v, w, x, y, z }</li>
+              <li><strong>E</strong> = set of <em>edges</em> (links/roads between routers)</li>
+            </ul>
+          </li>
+          <li><strong>c(a, b)</strong> = cost of the link between router a and router b</li>
+          <li>If two routers are <em>not directly connected</em>, the cost = <strong>∞ (infinity)</strong></li>
+          <li>Cost can mean: bandwidth, delay, congestion, or always just "1"</li>
+        </ul>
+      </div>
+      <div class="info-box example-box">
+        <span class="label example">Example from slide</span>
+        <p>In the graph with routers u, v, w, x, y, z:</p>
+        <ul>
+          <li>c(w, z) = 5 &nbsp;→ they are connected with cost 5</li>
+          <li>c(u, z) = ∞ &nbsp;→ u and z have no direct link</li>
+          <li>c(u, x) = 1 &nbsp;→ cheapest direct link</li>
+        </ul>
+      </div>
+      <div class="info-box mcq-box">
+        <span class="label mcq">MCQ / Fill-in-the-blank Ready</span>
+        <ul>
+          <li>In graph notation G = (N, E), N stands for _____ and E stands for _____. <em>(nodes/routers; edges/links)</em></li>
+          <li>c(a,b) = ∞ means routers a and b are _____ directly connected. <em>(not)</em></li>
+          <li>Link cost can be inversely related to _____. <em>(bandwidth or congestion)</em></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOPIC 3 -->
+  <div class="topic gold-accent">
+    <div class="topic-header">
+      <div class="topic-icon">⚙️</div>
+      <div class="topic-header-text">
+        <div class="slide-tag">Slide 11</div>
+        <div class="topic-title">Routing Algorithm Classification</div>
+        <div class="topic-purpose">Purpose: Understand the two major types of routing algorithms</div>
+      </div>
+    </div>
+    <div class="topic-body">
+      <div class="label desc">Simple Description</div>
+      <p>There are two big questions that classify routing algorithms:</p>
+
+      <p><strong>Question 1: How much information does a router have?</strong></p>
+      <table>
+        <thead><tr><th>Type</th><th>Information Available</th><th>Algorithm Used</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Global</strong></td><td>Every router knows the COMPLETE map of the entire network</td><td><mark>Link State</mark> (e.g., Dijkstra's)</td></tr>
+          <tr><td><strong>Decentralized</strong></td><td>Each router only knows costs to its direct neighbors; learns the rest by talking to them</td><td><mark>Distance Vector</mark> (e.g., Bellman-Ford)</td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>Question 2: How fast do routes change?</strong></p>
+      <table>
+        <thead><tr><th>Type</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Static</strong></td><td>Routes change very slowly over time (manual updates)</td></tr>
+          <tr><td><strong>Dynamic</strong></td><td>Routes change quickly — in response to link failures or congestion</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box mcq-box">
+        <span class="label mcq">MCQ / Fill-in-the-blank Ready</span>
+        <ul>
+          <li>In a _____ algorithm, all routers have complete topology info. <em>(global / link state)</em></li>
+          <li>Distance vector is a _____ algorithm. <em>(decentralized)</em></li>
+          <li>In a _____ routing algorithm, routes change quickly in response to link cost changes. <em>(dynamic)</em></li>
+          <li>Dijkstra's algorithm is classified as a _____ state algorithm. <em>(link)</em></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider">The Main Algorithm: Dijkstra's</div>
+
+  <!-- TOPIC 4 -->
+  <div class="topic">
+    <div class="topic-header">
+      <div class="topic-icon">🧠</div>
+      <div class="topic-header-text">
+        <div class="slide-tag">Slides 13–14</div>
+        <div class="topic-title">Dijkstra's Link-State Algorithm — The Concept</div>
+        <div class="topic-purpose">Purpose: Find the shortest (least-cost) path from ONE router to ALL other routers</div>
+      </div>
+    </div>
+    <div class="topic-body">
+      <div class="label desc">Simple Description</div>
+      <p>Dijkstra's algorithm is like a person standing at a starting city, wanting to find the cheapest route to every other city on the map. It keeps checking routes step by step, always picking the <em>cheapest unexplored option</em> first.</p>
+
+      <div class="info-box">
+        <p><strong>Key properties:</strong></p>
+        <ul>
+          <li><strong>Centralized</strong>: Needs the full network map (link costs) to be known to all nodes — done via "link state broadcast."</li>
+          <li><strong>Iterative</strong>: After k steps, we know the shortest path to k destinations.</li>
+          <li><strong>Result</strong>: Produces a forwarding table — "to reach destination X, send packet out on link Y."</li>
+        </ul>
+      </div>
+
+      <div class="label key">Key Notation (Very Important for Exams!)</div>
+      <div class="info-box key-box">
+        <table>
+          <thead><tr><th>Symbol</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td><strong>c(x, y)</strong></td><td>Direct link cost between x and y. = ∞ if not neighbors.</td></tr>
+            <tr><td><strong>D(v)</strong></td><td>Current best estimate of cost from source to node v</td></tr>
+            <tr><td><strong>p(v)</strong></td><td>Predecessor of v — the node just before v on the best path</td></tr>
+            <tr><td><strong>N'</strong></td><td>Set of nodes whose final shortest path is confirmed/known</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="label desc">The Algorithm Logic (Plain English)</div>
+      <div class="info-box">
+        <div class="dijk-step">
+          <div class="dijk-num">1</div>
+          <div class="dijk-content"><strong>Initialization:</strong> Start at source node u. N' = {u}. For each neighbor of u, set D(neighbor) = direct link cost. For all others, D = ∞.</div>
+        </div>
+        <div class="dijk-step">
+          <div class="dijk-num">2</div>
+          <div class="dijk-content"><strong>Loop:</strong> Find the node <em>w</em> not yet in N' that has the <em>smallest D(w)</em>. Add w to N' (its path is now final!).</div>
+        </div>
+        <div class="dijk-step">
+          <div class="dijk-num">3</div>
+          <div class="dijk-content"><strong>Update neighbors:</strong> For every neighbor v of w (not in N'), check if going through w is cheaper:
+            <div class="formula">D(v) = min( D(v), D(w) + c(w, v) )</div>
+          </div>
+        </div>
+        <div class="dijk-step">
+          <div class="dijk-num">4</div>
+          <div class="dijk-content"><strong>Repeat</strong> until all nodes are in N'.</div>
+        </div>
+      </div>
+
+      <div class="info-box mcq-box">
+        <span class="label mcq">MCQ / Fill-in-the-blank Ready</span>
+        <ul>
+          <li>Dijkstra's algorithm computes _____ cost paths from one source to all other nodes. <em>(least)</em></li>
+          <li>N' is the set of nodes whose least-cost-path is _____. <em>(definitively known)</em></li>
+          <li>D(v) represents the current _____ of cost from source to v. <em>(estimate)</em></li>
+          <li>p(v) is the _____ node along the path to v. <em>(predecessor)</em></li>
+          <li>Dijkstra's is a _____ algorithm (needs full topology). <em>(centralized)</em></li>
+          <li>After k iterations of Dijkstra's, we know shortest paths to _____ destinations. <em>(k)</em></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOPIC 5: Example walkthrough -->
+  <div class="topic green-accent">
+    <div class="topic-header">
+      <div class="topic-icon">📊</div>
+      <div class="topic-header-text">
+        <div class="slide-tag">Slides 15–26</div>
+        <div class="topic-title">Dijkstra's Algorithm — Step-by-Step Example</div>
+        <div class="topic-purpose">Purpose: See exactly how the algorithm works on a real network graph</div>
+      </div>
+    </div>
+    <div class="topic-body">
+      <div class="label desc">The Network (from Slide 10)</div>
+      <div class="info-box">
+        <p>Nodes: u, v, w, x, y, z. Source = <strong>u</strong>. Direct link costs from u:</p>
+        <ul>
+          <li>u→v = 2, u→x = 1, u→w = 5 (via the graph)</li>
+          <li>u→y = ∞ (not direct), u→z = ∞ (not direct)</li>
+        </ul>
+        <p>Other links: v-x=2, v-w=3, x-w=3, x-y=1, w-y=1, w-z=5, y-z=2</p>
+      </div>
+
+      <div class="label example">Step-by-Step Walkthrough</div>
+
+      <div class="info-box example-box">
+        <p><strong>Step 0 — Initialization:</strong></p>
+        <ul>
+          <li>N' = {u}</li>
+          <li>D(v) = 2 (direct), p(v) = u</li>
+          <li>D(x) = 1 (direct), p(x) = u</li>
+          <li>D(w) = 5 (direct), p(w) = u</li>
+          <li>D(y) = ∞ (not direct)</li>
+          <li>D(z) = ∞ (not direct)</li>
+        </ul>
+      </div>
+
+      <div class="info-box example-box">
+        <p><strong>Step 1 — Pick smallest D not in N':</strong></p>
+        <p>Smallest is D(x) = 1 → add x to N'. Now N' = {u, x}</p>
+        <p>Update x's neighbors not in N':</p>
+        <ul>
+          <li>D(v) = min(2, D(x)+c(x,v)) = min(2, 1+2) = <strong>2</strong>, p(v)=u (no change)</li>
+          <li>D(w) = min(5, D(x)+c(x,w)) = min(5, 1+3) = <strong>4</strong>, p(w)=x ✅ updated!</li>
+          <li>D(y) = min(∞, D(x)+c(x,y)) = min(∞, 1+1) = <strong>2</strong>, p(y)=x ✅ updated!</li>
+        </ul>
+      </div>
+
+      <div class="info-box example-box">
+        <p><strong>Step 2 — Pick smallest D not in N':</strong></p>
+        <p>Tie: D(v)=2 and D(y)=2. Pick y (or v — either works). Add y. N' = {u, x, y}</p>
+        <p>Update y's neighbors:</p>
+        <ul>
+          <li>D(w) = min(4, D(y)+c(y,w)) = min(4, 2+1) = <strong>3</strong>, p(w)=y ✅</li>
+          <li>D(z) = min(∞, D(y)+c(y,z)) = min(∞, 2+2) = <strong>4</strong>, p(z)=y ✅</li>
+        </ul>
+      </div>
+
+      <div class="info-box example-box">
+        <p><strong>Step 3 — Pick smallest D not in N':</strong></p>
+        <p>D(v)=2 is smallest. Add v. N' = {u, x, y, v}</p>
+        <p>Update v's neighbors:</p>
+        <ul>
+          <li>D(w) = min(3, D(v)+c(v,w)) = min(3, 2+3) = <strong>3</strong> (no change)</li>
+        </ul>
+      </div>
+
+      <div class="info-box example-box">
+        <p><strong>Step 4 — Pick smallest D not in N':</strong></p>
+        <p>D(w)=3 is smallest. Add w. N' = {u, x, y, v, w}</p>
+        <p>Update w's neighbors:</p>
+        <ul>
+          <li>D(z) = min(4, D(w)+c(w,z)) = min(4, 3+5) = <strong>4</strong> (no change)</li>
+        </ul>
+      </div>
+
+      <div class="info-box example-box">
+        <p><strong>Step 5 — Last node:</strong></p>
+        <p>Only z remains. D(z)=4, p(z)=y. Add z. N' = {u, x, y, v, w, z}. <strong>Done!</strong></p>
+      </div>
+
+      <div class="label key">Final Shortest Paths from u</div>
+      <div class="info-box key-box">
+        <table>
+          <thead><tr><th>Destination</th><th>Cost</th><th>Path</th></tr></thead>
+          <tbody>
+            <tr><td>v</td><td>2</td><td>u → v</td></tr>
+            <tr><td>x</td><td>1</td><td>u → x</td></tr>
+            <tr><td>y</td><td>2</td><td>u → x → y</td></tr>
+            <tr><td>w</td><td>3</td><td>u → x → y → w</td></tr>
+            <tr><td>z</td><td>4</td><td>u → x → y → z</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-box mcq-box">
+        <span class="label mcq">MCQ / Fill-in-the-blank Ready</span>
+        <ul>
+          <li>In Dijkstra's, at each step we pick the node with the _____ estimated cost. <em>(minimum / smallest)</em></li>
+          <li>D(v) = min(D(v), D(w) + c(w,v)) — this formula is used to _____ estimates. <em>(update)</em></li>
+          <li>In the example, the shortest path from u to y has cost _____. <em>(2)</em></li>
+          <li>The predecessor of w in the final path is _____. <em>(y)</em></li>
+          <li>When is a node added to N'? When its shortest path cost is _____. <em>(minimum / definitively known)</em></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOPIC 6 -->
+  <div class="topic blue-accent">
+    <div class="topic-header">
+      <div class="topic-icon">📋</div>
+      <div class="topic-header-text">
+        <div class="slide-tag">Slide 27</div>
+        <div class="topic-title">Resulting Forwarding Table</div>
+        <div class="topic-purpose">Purpose: Use the shortest paths to build the router's forwarding table</div>
+      </div>
+    </div>
+    <div class="topic-body">
+      <div class="label desc">Simple Description</div>
+      <p>After Dijkstra's finishes, the router u uses the results to build its <strong>forwarding table</strong>. This table tells u: "If a packet is going to destination X, which outgoing link should I send it on?"</p>
+      <p>The key insight: <em>even if the final destination is far away, the packet just needs to know the first hop (next link).</em></p>
+      <div class="info-box example-box">
+        <span class="label example">Forwarding Table at Router u</span>
+        <table>
+          <thead><tr><th>Destination</th><th>Outgoing Link (First Hop)</th><th>Reason</th></tr></thead>
+          <tbody>
+            <tr><td>v</td><td>(u, v)</td><td>Direct path to v</td></tr>
+            <tr><td>x</td><td>(u, x)</td><td>Direct path to x</td></tr>
+            <tr><td>y</td><td>(u, x)</td><td>Path: u→x→y, so go via x</td></tr>
+            <tr><td>w</td><td>(u, x)</td><td>Path: u→x→y→w, so go via x</td></tr>
+            <tr><td>z</td><td>(u, x)</td><td>Path: u→x→y→z, so go via x</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:10px;">Notice: almost all destinations go through link (u,x) first — because x is the cheapest first step!</p>
+      </div>
+      <div class="info-box mcq-box">
+        <span class="label mcq">MCQ / Fill-in-the-blank Ready</span>
+        <ul>
+          <li>A forwarding table maps each _____ to an outgoing _____. <em>(destination; link)</em></li>
+          <li>In the example, to reach z from u, the outgoing link is _____. <em>(u,x)</em></li>
+          <li>The result of Dijkstra's algorithm gives the _____ table for a router. <em>(forwarding)</em></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOPIC 7 -->
+  <div class="topic purple-accent">
+    <div class="topic-header">
+      <div class="topic-icon">📈</div>
+      <div class="topic-header-text">
+        <div class="slide-tag">Slide 29</div>
+        <div class="topic-title">Dijkstra's Algorithm: Complexity</div>
+        <div class="topic-purpose">Purpose: Understand how efficient (or slow) Dijkstra's algorithm is</div>
+      </div>
+    </div>
+    <div class="topic-body">
+      <div class="label desc">Simple Description</div>
+      <p>When we say <strong>complexity</strong>, we ask: "As the number of routers (n) grows, how much more work does the algorithm need?"</p>
+
+      <div class="info-box">
+        <p><strong>Algorithm Complexity (how many comparisons):</strong></p>
+        <ul>
+          <li>In each of the n iterations, we check all nodes not yet in N' → up to n comparisons per step</li>
+          <li>Total comparisons: n + (n-1) + … + 1 = <strong>n(n+1)/2</strong></li>
+          <li>This is <mark>O(n²)</mark> — meaning if the network doubles in size, computation quadruples</li>
+          <li>More efficient versions exist using priority queues: <mark>O(n log n)</mark></li>
+        </ul>
+      </div>
+
+      <div class="info-box">
+        <p><strong>Message Complexity (how many messages routers send):</strong></p>
+        <ul>
+          <li>Each router must <strong>broadcast</strong> its link-state info to all other n routers</li>
+          <li>Each broadcast message crosses O(n) links</li>
+          <li>Total message complexity: <mark>O(n²)</mark></li>
+        </ul>
+      </div>
+
+      <div class="info-box mcq-box">
+        <span class="label mcq">MCQ / Fill-in-the-blank Ready</span>
+        <ul>
+          <li>The basic complexity of Dijkstra's algorithm with n nodes is _____. <em>(O(n²))</em></li>
+          <li>More efficient implementations of Dijkstra's can achieve _____ complexity. <em>(O(n log n))</em></li>
+          <li>The number of comparisons in Dijkstra's basic version is _____. <em>(n(n+1)/2)</em></li>
+          <li>In link-state routing, each router must _____ its link state to other routers. <em>(broadcast)</em></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOPIC 8 -->
+  <div class="topic red-accent">
+    <div class="topic-header">
+      <div class="topic-icon">⚠️</div>
+      <div class="topic-header-text">
+        <div class="slide-tag">Slide 30</div>
+        <div class="topic-title">Oscillations in Dijkstra's Algorithm</div>
+        <div class="topic-purpose">Purpose: Understand a serious problem that can happen when link costs depend on traffic</div>
+      </div>
+    </div>
+    <div class="topic-body">
+      <div class="label desc">Simple Description</div>
+      <p>Normally, link costs are fixed. But what if link costs <em>change depending on how much traffic is on them</em>? Then a strange problem called <strong>oscillation</strong> can happen: routes keep changing back and forth, never settling!</p>
+
+      <div class="info-box example-box">
+        <span class="label example">Real-World Analogy</span>
+        <p>Imagine a highway that is cheap when empty and expensive when crowded. Everyone takes it, so it gets crowded → everyone switches to another road → that road gets crowded → everyone switches back… and so on forever. This is oscillation.</p>
+      </div>
+
+      <div class="info-box">
+        <p><strong>Why it happens in networks:</strong></p>
+        <ul>
+          <li>All routers run Dijkstra's <em>at the same time</em> with the same cost info</li>
+          <li>They all pick the same "best" low-cost path → that path becomes congested</li>
+          <li>Next round: costs are recalculated, all switch to a different path</li>
+          <li>The cycle repeats → <strong>routes oscillate</strong> (keep changing)</li>
+        </ul>
+        <p><strong>Solution:</strong> Routers can randomize when they run the algorithm (not all at the same time) to avoid synchronized switching.</p>
+      </div>
+
+      <div class="info-box mcq-box">
+        <span class="label mcq">MCQ / Fill-in-the-blank Ready</span>
+        <ul>
+          <li>Route oscillations occur when link costs depend on _____ volume. <em>(traffic)</em></li>
+          <li>Oscillations happen because all routers compute new routes _____ using the same information. <em>(simultaneously / at the same time)</em></li>
+          <li>True/False: Oscillations are possible when link costs are always fixed at 1. <em>(False)</em></li>
+          <li>One solution to prevent oscillations is to _____ the time routers compute routes. <em>(randomize / offset)</em></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINAL SUMMARY -->
+  <div class="section-divider">Quick Review Summary</div>
+
+  <div class="topic gold-accent">
+    <div class="topic-header">
+      <div class="topic-icon">⭐</div>
+      <div class="topic-header-text">
+        <div class="slide-tag">All Topics</div>
+        <div class="topic-title">Master Cheat Sheet — Everything in One Place</div>
+        <div class="topic-purpose">All key terms and facts for MCQs and fill-in-the-blanks</div>
+      </div>
+    </div>
+    <div class="topic-body">
+      <div class="info-box">
+        <table>
+          <thead><tr><th>Term</th><th>Definition (in simple words)</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Routing Protocol</strong></td><td>A method to find the best (least-cost) path for packets</td></tr>
+            <tr><td><strong>Path</strong></td><td>The sequence of routers a packet travels through</td></tr>
+            <tr><td><strong>Graph G=(N,E)</strong></td><td>N = routers (nodes), E = links (edges) between them</td></tr>
+            <tr><td><strong>c(a,b)</strong></td><td>Cost of direct link between routers a and b; ∞ if no direct link</td></tr>
+            <tr><td><strong>Link State (Global)</strong></td><td>All routers know full network map — uses Dijkstra's</td></tr>
+            <tr><td><strong>Distance Vector (Decentralized)</strong></td><td>Routers only know neighbor costs — uses Bellman-Ford</td></tr>
+            <tr><td><strong>Dijkstra's Algorithm</strong></td><td>Finds shortest path from source to all nodes, step by step</td></tr>
+            <tr><td><strong>N'</strong></td><td>Set of nodes with confirmed shortest paths</td></tr>
+            <tr><td><strong>D(v)</strong></td><td>Current best estimated cost from source to node v</td></tr>
+            <tr><td><strong>p(v)</strong></td><td>Predecessor of v on the best path</td></tr>
+            <tr><td><strong>Forwarding Table</strong></td><td>Maps destination → outgoing link (first hop)</td></tr>
+            <tr><td><strong>O(n²)</strong></td><td>Complexity of Dijkstra's — grows quadratically with n nodes</td></tr>
+            <tr><td><strong>Oscillation</strong></td><td>Routes keep changing when costs depend on traffic volume</td></tr>
+            <tr><td><strong>Static routing</strong></td><td>Routes change slowly over time</td></tr>
+            <tr><td><strong>Dynamic routing</strong></td><td>Routes update quickly in response to network changes</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="info-box tip-box">
+        <span class="label tip">Key Formula to Memorize</span>
+        <div class="formula">D(v) = min( D(v), D(w) + c(w, v) )</div>
+        <p style="margin-top:8px;">This says: "The new best cost to v = whichever is smaller — the old estimate OR going through w and then to v."</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Chapter 5 Study Guide · Slides 9–30 · Routing Protocols &amp; Dijkstra's Algorithm<br>
+  Prepared for exam readiness — MCQ, Fill-in-the-blank &amp; conceptual questions covered
+</footer>
+
+</body>
+</html>

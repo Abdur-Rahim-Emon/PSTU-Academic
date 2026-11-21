@@ -1,0 +1,74 @@
+.model small
+.stack 100h
+.data
+a db "input first number $"
+b db "input secend numbers $"
+c db "input third numbers $"
+x db ?
+y db ?
+z db ?
+n db 13,10,"$"
+.code
+main proc
+mov ax,@data
+mov ds,ax
+; input first one
+mov ah,9
+lea dx,a
+int 21h
+
+mov ah,1
+int 21h
+
+mov x,al
+
+mov ah,9
+lea dx,n
+int 21h
+
+; input 2nd  one
+mov ah,9
+lea dx,a
+int 21h
+
+mov ah,1
+int 21h
+
+mov y,al
+
+mov ah,9
+lea dx,n
+int 21h
+
+;comparision code
+
+mov al,x
+mov bl,y
+cmp al,bl
+jg l1
+jmp l2
+
+l1:
+mov ah,2
+mov dl,al
+int 21h
+jmp exit:
+
+l2:
+mov ah,2
+mov dl,bl
+int 21h
+jmp exit:
+
+
+exit:
+mov ah,4ch
+int 21h
+
+main endp
+end main
+
+
+
+
+; [SOURCE]: C:\EMU8086\MySource\if_else_condition.asm

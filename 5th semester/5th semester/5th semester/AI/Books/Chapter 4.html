@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 4 — Beyond Classical Search</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #e8e6e0;
+    --muted: #7a7870;
+    --accent: #c8f03a;
+    --accent2: #f03a7a;
+    --accent3: #3af0c8;
+    --accent4: #f0a83a;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'Lora', serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 3rem 2rem 2rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: -60px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(200,240,58,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .chapter-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  h1 {
+    font-family: var(--font-head);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    color: #fff;
+    margin-bottom: 1rem;
+  }
+  h1 span { color: var(--accent); }
+  .subtitle {
+    font-size: 14px;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    max-width: 500px;
+  }
+
+  /* ── LAYOUT ── */
+  .shell {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: calc(100vh - 180px);
+  }
+
+  /* ── SIDEBAR NAV ── */
+  nav {
+    border-right: 1px solid var(--border);
+    padding: 2rem 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  nav::-webkit-scrollbar { width: 4px; }
+  nav::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  .nav-section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .nav-item {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    padding: 0.65rem 1.5rem;
+    font-family: var(--font-head);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+    position: relative;
+  }
+  .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+  .nav-item.active {
+    color: #fff;
+    border-left-color: var(--accent);
+    background: rgba(200,240,58,0.05);
+  }
+  .nav-item .num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .nav-item.active .num { color: var(--accent); }
+
+  /* ── CONTENT ── */
+  main {
+    padding: 2.5rem 2.5rem;
+    max-width: 780px;
+  }
+
+  .section { display: none; }
+  .section.active {
+    display: block;
+    animation: fadeIn 0.25s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .section-head {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-family: var(--font-head);
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 0.5rem;
+  }
+  .section-desc {
+    font-size: 14px;
+    color: var(--muted);
+    font-family: var(--font-mono);
+  }
+
+  /* ── PURPOSE BOX ── */
+  .purpose {
+    border: 1px solid rgba(200,240,58,0.3);
+    border-left: 3px solid var(--accent);
+    background: rgba(200,240,58,0.04);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.75rem;
+    font-size: 14.5px;
+    color: #c8f03a;
+  }
+  .purpose strong { font-weight: 600; }
+
+  /* ── BODY TEXT ── */
+  .body-text {
+    font-size: 15.5px;
+    color: var(--text);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+  .body-text b { color: #fff; font-weight: 600; font-style: normal; }
+
+  /* ── EXAMPLE BOX ── */
+  .example {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.75rem;
+  }
+  .example-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent3);
+    margin-bottom: 0.75rem;
+  }
+  .example p { font-size: 14.5px; line-height: 1.75; color: #c8c6c0; }
+  .example p + p { margin-top: 0.75rem; }
+
+  /* ── STAT CARDS ── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 1.75rem;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+  .stat-card .slabel {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .stat-card .sval {
+    font-family: var(--font-head);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .stat-card .sdesc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* ── STEPS ── */
+  .steps { margin-bottom: 1.75rem; }
+  .step {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .step:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .step-num {
+    min-width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+  .step-body { font-size: 14.5px; line-height: 1.75; color: var(--text); }
+  .step-body b { color: #fff; }
+
+  /* ── HIGHLIGHT ── */
+  .highlight {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    font-size: 14.5px;
+    color: var(--text);
+    margin-bottom: 1rem;
+    line-height: 1.7;
+  }
+  .highlight b { color: var(--accent4); }
+
+  /* ── TAGS ── */
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
+  .tag {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid;
+  }
+  .tag-green { background: rgba(58,240,200,0.08); color: var(--accent3); border-color: rgba(58,240,200,0.25); }
+  .tag-red { background: rgba(240,58,122,0.08); color: var(--accent2); border-color: rgba(240,58,122,0.25); }
+  .tag-yellow { background: rgba(200,240,58,0.08); color: var(--accent); border-color: rgba(200,240,58,0.25); }
+  .tag-orange { background: rgba(240,168,58,0.08); color: var(--accent4); border-color: rgba(240,168,58,0.25); }
+
+  /* ── FLOW BOXES ── */
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .flow-box {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: var(--font-head);
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .flow-arrow { color: var(--muted); font-size: 18px; }
+
+  /* ── MCQ SECTION ── */
+  .mcq-section {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-top: 2rem;
+  }
+  .mcq-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent2);
+    margin-bottom: 0.75rem;
+  }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* ── H3 ── */
+  h3 {
+    font-family: var(--font-head);
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  /* ── DIVIDER ── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 1.75rem 0; }
+
+  /* ── CODE INLINE ── */
+  code {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--surface2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--accent3);
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 640px) {
+    .shell { grid-template-columns: 1fr; }
+    nav { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 1rem 0; display: flex; gap: 4px; flex-wrap: wrap; padding: 1rem; }
+    .nav-section-label { display: none; }
+    .nav-item { width: auto; border-left: none; border-bottom: 2px solid transparent; border-radius: 6px; padding: 6px 12px; }
+    .nav-item.active { border-left-color: transparent; border-bottom-color: var(--accent); }
+    main { padding: 1.5rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="chapter-label">AIMA · Chapter 4</div>
+  <h1>Beyond <span>Classical</span><br>Search</h1>
+  <p class="subtitle">Interactive study guide — click a topic in the sidebar to begin</p>
+</header>
+
+<div class="shell">
+
+  <nav>
+    <div class="nav-section-label" style="margin-bottom:1rem;">Topics</div>
+    <button class="nav-item active" onclick="show('overview')">
+      <span class="num">00</span>Chapter overview
+    </button>
+    <button class="nav-item" onclick="show('local')">
+      <span class="num">4.1</span>Local search
+    </button>
+    <button class="nav-item" onclick="show('hillclimb')">
+      <span class="num">4.1.1</span>Hill climbing
+    </button>
+    <button class="nav-item" onclick="show('simulated')">
+      <span class="num">4.1.2</span>Simulated annealing
+    </button>
+    <button class="nav-item" onclick="show('beam')">
+      <span class="num">4.1.3</span>Local beam search
+    </button>
+    <button class="nav-item" onclick="show('genetic')">
+      <span class="num">4.1.4</span>Genetic algorithms
+    </button>
+    <button class="nav-item" onclick="show('continuous')">
+      <span class="num">4.2</span>Continuous spaces
+    </button>
+  </nav>
+
+  <main>
+
+    <!-- ════════════════ OVERVIEW ════════════════ -->
+    <div id="overview" class="section active">
+      <div class="section-head">
+        <div class="section-tag" style="color: var(--accent);">Chapter overview</div>
+        <h2 class="section-title">How all topics connect</h2>
+        <p class="section-desc">Start here — understand why each topic exists before diving in</p>
+      </div>
+
+      <div class="purpose">
+        <strong>Purpose:</strong> Chapter 3 only handled simple, fully-known, predictable worlds. Chapter 4 asks: what if we relax those rules one by one?
+      </div>
+
+      <p class="body-text">Chapter 3 assumed the world is <b>observable</b> (you see everything), <b>deterministic</b> (actions have certain results), and <b>known</b> (you have a complete map). Chapter 4 breaks those assumptions gradually.</p>
+
+      <div class="flow-row">
+        <div class="flow-box" style="background:rgba(200,240,58,0.1); color:var(--accent);">Local search (4.1–4.2)</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box" style="background:rgba(58,240,200,0.1); color:var(--accent3);">Non-determinism (4.3–4.4)</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box" style="background:rgba(240,168,58,0.1); color:var(--accent4);">Online search (4.5)</div>
+      </div>
+
+      <p class="body-text">The chapter starts with the <b>simplest relaxation</b>: what if only the final state matters, not the path to reach it? That leads to local search. Then it asks what happens when actions are unpredictable or the world is only partially visible.</p>
+
+      <hr>
+      <h3>Topic flow — why one leads to the next</h3>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num" style="background:rgba(200,240,58,0.15); color:var(--accent);">1</div>
+          <div class="step-body"><b>Local search</b> — introduces the idea of searching without tracking paths. Defines the "state-space landscape" metaphor used throughout.</div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(200,240,58,0.15); color:var(--accent);">2</div>
+          <div class="step-body"><b>Hill climbing</b> — the simplest local search. Works fast but gets stuck. This failure motivates everything that follows.</div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(200,240,58,0.15); color:var(--accent);">3</div>
+          <div class="step-body"><b>Simulated annealing</b> — fixes hill climbing's stuck problem by sometimes accepting worse moves early on.</div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(200,240,58,0.15); color:var(--accent);">4</div>
+          <div class="step-body"><b>Local beam search</b> — runs k searches simultaneously and lets them share information, unlike independent random restarts.</div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(200,240,58,0.15); color:var(--accent);">5</div>
+          <div class="step-body"><b>Genetic algorithms</b> — extends beam search by combining two parents (crossover) instead of modifying one state.</div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(200,240,58,0.15); color:var(--accent);">6</div>
+          <div class="step-body"><b>Continuous spaces</b> — extends everything above to infinite state spaces using gradient methods from calculus.</div>
+        </div>
+      </div>
+
+      <div class="mcq-section">
+        <div class="mcq-label">⚡ Key keywords for MCQ &amp; fill-in-the-blank</div>
+        <div class="chip-row">
+          <span class="chip">local search</span><span class="chip">hill climbing</span><span class="chip">simulated annealing</span><span class="chip">genetic algorithm</span><span class="chip">local maximum</span><span class="chip">plateau</span><span class="chip">ridge</span><span class="chip">fitness function</span><span class="chip">crossover</span><span class="chip">mutation</span><span class="chip">gradient descent</span><span class="chip">objective function</span><span class="chip">state-space landscape</span><span class="chip">global maximum</span><span class="chip">schema</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ LOCAL SEARCH ════════════════ -->
+    <div id="local" class="section">
+      <div class="section-head">
+        <div class="section-tag" style="color: var(--accent3);">Section 4.1</div>
+        <h2 class="section-title">Local search algorithms</h2>
+        <p class="section-desc">The foundation for every algorithm in this chapter</p>
+      </div>
+
+      <div class="purpose">
+        <strong>Purpose:</strong> Introduce a completely different style of search — one where you do NOT track the path. Only the current state matters.
+      </div>
+
+      <p class="body-text">In Chapter 3, search kept a full tree of every path explored. Local search throws that all away. It holds only <b>one current state</b> and moves to a neighbor of that state, again and again.</p>
+
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="slabel">Memory used</div>
+          <div class="sval" style="font-size:1.3rem;">Constant</div>
+          <div class="sdesc">No path stored at all</div>
+        </div>
+        <div class="stat-card">
+          <div class="slabel">Tracks</div>
+          <div class="sval" style="font-size:1.3rem;">1 state</div>
+          <div class="sdesc">Current node only</div>
+        </div>
+        <div class="stat-card">
+          <div class="slabel">Best for</div>
+          <div class="sval" style="font-size:1.3rem; color: var(--accent3);">Optim.</div>
+          <div class="sdesc">When only goal matters</div>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="example-label">🏔 The blindfolded hiker analogy</div>
+        <p>Imagine you are blindfolded on a hilly landscape. You want to reach the highest peak. You can only feel if the ground under your feet goes up or down. You take a step in the best direction. You don't remember where you started or how you got here — only where you are right now.</p>
+        <p>This is local search. No memory of the path. Only the current state and what's nearby.</p>
+      </div>
+
+      <hr>
+      <h3>State-space landscape — the central metaphor</h3>
+      <p class="body-text">Think of every possible state as a point on a map. The "height" of each point equals how good that state is (the objective function value). Local search algorithms are explorers on this landscape trying to reach the highest peak.</p>
+
+      <div class="tag-row">
+        <span class="tag tag-yellow">Global maximum = best possible solution</span>
+        <span class="tag tag-red">Local maximum = stuck point</span>
+        <span class="tag tag-green">Shoulder = flat area with an exit</span>
+        <span class="tag tag-orange">Plateau = flat area, possibly no exit</span>
+      </div>
+
+      <hr>
+      <h3>Two goals of local search</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num" style="background:rgba(58,240,200,0.15); color:var(--accent3);">1</div>
+          <div class="step-body"><b>Find a goal state</b> — a complete, correct answer. Example: a valid solution to the 8-queens problem.</div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(58,240,200,0.15); color:var(--accent3);">2</div>
+          <div class="step-body"><b>Optimization</b> — find the best possible state according to an objective function. Example: maximize profit, minimize cost, find the best airport placement.</div>
+        </div>
+      </div>
+
+      <div class="mcq-section">
+        <div class="mcq-label">⚡ Exam focus</div>
+        <div class="chip-row">
+          <span class="chip">current node</span><span class="chip">objective function</span><span class="chip">state-space landscape</span><span class="chip">global minimum / maximum</span><span class="chip">optimization problem</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ HILL CLIMBING ════════════════ -->
+    <div id="hillclimb" class="section">
+      <div class="section-head">
+        <div class="section-tag" style="color: var(--accent2);">Section 4.1.1</div>
+        <h2 class="section-title">Hill-climbing search</h2>
+        <p class="section-desc">The most basic local search — always move to the best neighbor</p>
+      </div>
+
+      <div class="purpose">
+        <strong>Purpose:</strong> Show the simplest strategy and explain exactly why it often fails — motivating every other algorithm in the chapter.
+      </div>
+
+      <p class="body-text">Hill climbing (steepest-ascent version) is a loop that continuously moves in the direction of the <b>highest-valued neighbor</b>. It stops when no neighbor is better than the current state. It never looks further than the immediate neighbors — like trying to find the top of Mount Everest in a thick fog while suffering from amnesia.</p>
+
+      <div class="example">
+        <div class="example-label">📋 8-queens example</div>
+        <p>Each of 8 queens sits in one column. Any queen can move to another square in its column. Each state therefore has <code>8 × 7 = 56</code> successors. The heuristic cost <code>h</code> = number of attacking queen pairs. Goal: <code>h = 0</code>.</p>
+        <p>From a starting state with <code>h = 17</code>, the algorithm picks the neighbor with the best improvement (say <code>h = 12</code>). It reaches a near-solution (<code>h = 1</code>) in about 5 steps. But then it often gets stuck.</p>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="slabel">Success rate</div>
+          <div class="sval">14%</div>
+          <div class="sdesc">Basic hill climbing</div>
+        </div>
+        <div class="stat-card">
+          <div class="slabel">Gets stuck</div>
+          <div class="sval" style="color:var(--accent2);">86%</div>
+          <div class="sdesc">of the time</div>
+        </div>
+        <div class="stat-card">
+          <div class="slabel">With sideways moves</div>
+          <div class="sval" style="color:var(--accent3);">94%</div>
+          <div class="sdesc">success rate</div>
+        </div>
+      </div>
+
+      <hr>
+      <h3>3 reasons hill climbing gets stuck</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num" style="background:rgba(240,58,122,0.15); color:var(--accent2);">1</div>
+          <div class="step-body"><b>Local maximum</b> — a peak that is higher than all its immediate neighbors but NOT the global maximum. Every move looks downhill, so the algorithm stops, even though far better states exist elsewhere in the space.</div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(240,58,122,0.15); color:var(--accent2);">2</div>
+          <div class="step-body"><b>Ridge</b> — a narrow upward slope in the landscape where all directly available moves point downhill. The algorithm cannot navigate sideways along the ridge and gets stuck at a false peak.</div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(240,58,122,0.15); color:var(--accent2);">3</div>
+          <div class="step-body"><b>Plateau / shoulder</b> — a flat area where all neighbors have the same value. A flat local maximum has no uphill exit at all. A shoulder does have an exit but you may not find it by always picking the best neighbor.</div>
+        </div>
+      </div>
+
+      <hr>
+      <h3>Variants (very common in exams)</h3>
+
+      <div class="highlight">
+        <b>Stochastic hill climbing</b> — picks randomly among uphill moves (not always the steepest). Usually converges more slowly but can find better solutions in some landscapes.
+      </div>
+      <div class="highlight">
+        <b>First-choice hill climbing</b> — generates random successors until one is better than the current state. Very efficient when a state has thousands of successors.
+      </div>
+      <div class="highlight">
+        <b>Random-restart hill climbing</b> — "If at first you don't succeed, try, try again." Restarts from a random state whenever stuck. Trivially complete. For 8-queens: needs about 7 iterations on average to find a solution.
+      </div>
+      <div class="highlight">
+        <b>Sideways move</b> — allow moving to a neighbor with equal value (not just higher). Limits must be set (e.g. max 100 sideways moves) to avoid infinite loops on flat maxima. Raises success rate from 14% → 94%.
+      </div>
+
+      <div class="mcq-section">
+        <div class="mcq-label">⚡ Exam focus</div>
+        <div class="chip-row">
+          <span class="chip">steepest ascent</span><span class="chip">greedy local search</span><span class="chip">local maximum</span><span class="chip">ridge</span><span class="chip">plateau</span><span class="chip">shoulder</span><span class="chip">sideways move</span><span class="chip">random restart</span><span class="chip">14% → 94%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ SIMULATED ANNEALING ════════════════ -->
+    <div id="simulated" class="section">
+      <div class="section-head">
+        <div class="section-tag" style="color: var(--accent4);">Section 4.1.2</div>
+        <h2 class="section-title">Simulated annealing</h2>
+        <p class="section-desc">Escape local maxima by sometimes accepting worse moves</p>
+      </div>
+
+      <div class="purpose">
+        <strong>Purpose:</strong> Combine hill climbing (efficient) with a random walk (complete) to escape local maxima while still converging to a good solution.
+      </div>
+
+      <p class="body-text">The name comes from metallurgy. <b>Annealing</b> is the process of heating metal to a high temperature and then slowly cooling it. The atoms settle into a stable low-energy crystal structure. The algorithm copies this idea: start "hot" (accept many bad moves), then gradually "cool" (accept fewer bad moves).</p>
+
+      <div class="example">
+        <div class="example-label">🏓 Ping-pong ball analogy (from the textbook)</div>
+        <p>Imagine a bumpy surface and a ping-pong ball. If you just let it roll, it gets stuck in a shallow dip (local minimum). If you shake the surface hard at first and then gradually shake less and less, the ball bounces out of small dips but eventually settles in the deepest dip — the global minimum.</p>
+        <p>Simulated annealing = shaking the surface. Temperature = how hard you shake.</p>
+      </div>
+
+      <hr>
+      <h3>How the algorithm works — step by step</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num" style="background:rgba(240,168,58,0.15); color:var(--accent4);">1</div>
+          <div class="step-body">Pick a <b>random</b> neighboring state (not the best one — any random neighbor).</div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(240,168,58,0.15); color:var(--accent4);">2</div>
+          <div class="step-body">Calculate <code>ΔE</code> = new value − current value. If <code>ΔE &gt; 0</code> (move is better): <b>always accept it</b>.</div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(240,168,58,0.15); color:var(--accent4);">3</div>
+          <div class="step-body">If <code>ΔE ≤ 0</code> (move is worse): accept it with probability <code>e^(ΔE/T)</code>. When T is high (hot), this is close to 1. When T is low (cold), this is near 0.</div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(240,168,58,0.15); color:var(--accent4);">4</div>
+          <div class="step-body">Slowly reduce T according to a <b>schedule</b>. If T decreases slowly enough, the algorithm finds the global optimum with probability approaching 1.</div>
+        </div>
+      </div>
+
+      <hr>
+      <div class="highlight">
+        <b>Key difference from hill climbing:</b> Hill climbing <em>never</em> accepts a worse move. Simulated annealing <em>sometimes</em> accepts worse moves, especially early on when T is high. This is exactly how it escapes local maxima.
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="slabel">Accepts bad moves?</div>
+          <div class="sval" style="font-size:1.1rem; color:var(--accent3);">Yes, early on</div>
+          <div class="sdesc">prob. decreases over time</div>
+        </div>
+        <div class="stat-card">
+          <div class="slabel">Real-world use</div>
+          <div class="sval" style="font-size:1rem; color:var(--accent4);">VLSI layout</div>
+          <div class="sdesc">also job scheduling</div>
+        </div>
+      </div>
+
+      <div class="mcq-section">
+        <div class="mcq-label">⚡ Exam focus</div>
+        <div class="chip-row">
+          <span class="chip">annealing (metallurgy)</span><span class="chip">temperature T</span><span class="chip">schedule</span><span class="chip">ΔE</span><span class="chip">e^(ΔE/T)</span><span class="chip">gradient descent</span><span class="chip">random move (not best)</span><span class="chip">bad moves accepted early</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ LOCAL BEAM SEARCH ════════════════ -->
+    <div id="beam" class="section">
+      <div class="section-head">
+        <div class="section-tag" style="color: var(--accent3);">Section 4.1.3</div>
+        <h2 class="section-title">Local beam search</h2>
+        <p class="section-desc">Track k states simultaneously — share information between threads</p>
+      </div>
+
+      <div class="purpose">
+        <strong>Purpose:</strong> Keep multiple "explorers" at once so promising regions get more attention. Unlike random restarts, these explorers communicate.
+      </div>
+
+      <p class="body-text">Basic hill climbing keeps <b>1 current state</b>. Local beam search keeps <b>k states</b> at the same time. At each step it generates all successors of all k states, then selects the k best from that combined list and repeats.</p>
+
+      <div class="example">
+        <div class="example-label">🔑 Critical difference from k random restarts</div>
+        <p>In k random restarts, each search runs <em>independently</em> — they never share what they find. In local beam search, the k threads <em>share information</em>. If one thread finds a great region, resources shift toward it. The algorithm "abandons unfruitful searches and moves its resources to where the most progress is being made."</p>
+      </div>
+
+      <hr>
+      <h3>The diversity problem</h3>
+      <p class="body-text">In its basic form, the k states can all quickly cluster in the same small region of the state space, making it no better than an expensive version of hill climbing.</p>
+
+      <div class="highlight">
+        <b>Fix: stochastic beam search</b> — instead of always picking the best k successors, choose k successors at random, where better successors have a higher probability of being selected. This maintains diversity across the k states. It closely resembles natural selection in biology.
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="slabel">States tracked</div>
+          <div class="sval">k</div>
+          <div class="sdesc">simultaneously</div>
+        </div>
+        <div class="stat-card">
+          <div class="slabel">Info sharing</div>
+          <div class="sval" style="font-size:1.1rem; color:var(--accent3);">Yes</div>
+          <div class="sdesc">unlike random restarts</div>
+        </div>
+      </div>
+
+      <div class="mcq-section">
+        <div class="mcq-label">⚡ Exam focus</div>
+        <div class="chip-row">
+          <span class="chip">k states</span><span class="chip">information sharing</span><span class="chip">stochastic beam search</span><span class="chip">diversity problem</span><span class="chip">vs random restarts</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ GENETIC ALGORITHMS ════════════════ -->
+    <div id="genetic" class="section">
+      <div class="section-head">
+        <div class="section-tag" style="color: var(--accent);">Section 4.1.4</div>
+        <h2 class="section-title">Genetic algorithms</h2>
+        <p class="section-desc">Combine two parents to create offspring — inspired by biological evolution</p>
+      </div>
+
+      <div class="purpose">
+        <strong>Purpose:</strong> Generate new states by combining two parent states (crossover) plus small random changes (mutation), mimicking how evolution produces new organisms.
+      </div>
+
+      <p class="body-text">A genetic algorithm (GA) is a type of stochastic beam search. The key difference: new states are made by <b>combining two parents</b> (crossover), not by modifying one state alone. This is sexual reproduction vs. asexual reproduction.</p>
+
+      <hr>
+      <h3>The 5 steps — memorize these</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num" style="background:rgba(200,240,58,0.15); color:var(--accent);">1</div>
+          <div class="step-body"><b>Initial population</b> — start with k randomly generated states called <em>individuals</em>. Each state is encoded as a string. For 8-queens: an 8-digit string like <code>24748552</code> where each digit = row of the queen in that column.</div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(200,240,58,0.15); color:var(--accent);">2</div>
+          <div class="step-body"><b>Fitness function</b> — score each individual. Higher = better. For 8-queens: number of non-attacking queen pairs. Maximum possible = 28 (all pairs non-attacking = solution).</div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(200,240,58,0.15); color:var(--accent);">3</div>
+          <div class="step-body"><b>Selection</b> — choose pairs of parents to reproduce. Probability of selection is proportional to fitness score. Better individuals are chosen more often.</div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(200,240,58,0.15); color:var(--accent);">4</div>
+          <div class="step-body"><b>Crossover</b> — pick a random position in the string (crossover point). Child inherits the first part from Parent A and the second part from Parent B. This combines useful "blocks" from both parents.</div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(200,240,58,0.15); color:var(--accent);">5</div>
+          <div class="step-body"><b>Mutation</b> — with a small random probability, change one character in the child string. Prevents the population from becoming too uniform and losing diversity.</div>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="example-label">✂️ Crossover example from the textbook</div>
+        <p>Parent A: <code>327</code><code style="opacity:0.4">52411</code> &nbsp;|&nbsp; Parent B: <code style="opacity:0.4">247</code><code>48552</code><br><br>Crossover point after position 3 → Child: <code>32748552</code><br><br>The child inherits the first 3 digits from A and the last 5 from B.</p>
+      </div>
+
+      <hr>
+      <h3>Schema — the theory behind why GAs work</h3>
+      <p class="body-text">A <b>schema</b> is a pattern in the string where some positions are left unspecified using <code>*</code>. Example: <code>246*****</code> matches all 8-queens states where the first three queens are in rows 2, 4, 6. Strings matching the schema are called <b>instances</b>.</p>
+      <p class="body-text">If instances of a schema have above-average fitness, the GA naturally produces more of them over generations. This is why GAs work — they find and combine <b>good building blocks</b>.</p>
+
+      <div class="highlight">
+        <b>Real-world uses:</b> circuit layout (VLSI), job-shop scheduling. GAs work best when the string representation maps to meaningful real-world components — so the "good blocks" actually correspond to useful sub-solutions.
+      </div>
+
+      <div class="mcq-section">
+        <div class="mcq-label">⚡ Exam focus</div>
+        <div class="chip-row">
+          <span class="chip">population / individual</span><span class="chip">fitness function</span><span class="chip">selection</span><span class="chip">crossover point</span><span class="chip">mutation</span><span class="chip">schema</span><span class="chip">instance</span><span class="chip">sexual vs asexual</span><span class="chip">stochastic beam search</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ CONTINUOUS ════════════════ -->
+    <div id="continuous" class="section">
+      <div class="section-head">
+        <div class="section-tag" style="color: var(--accent4);">Section 4.2</div>
+        <h2 class="section-title">Local search in continuous spaces</h2>
+        <p class="section-desc">What changes when the state space has infinite possible points</p>
+      </div>
+
+      <div class="purpose">
+        <strong>Purpose:</strong> Most algorithms above assume a discrete state space. The real world is continuous. This section shows how to handle infinite state spaces.
+      </div>
+
+      <p class="body-text">In a discrete problem, you pick from a finite list of neighbors. In a continuous problem, there are <b>infinitely many</b> neighbors in every direction (infinite branching factor). You cannot list them all, so you need different techniques.</p>
+
+      <div class="example">
+        <div class="example-label">🗺 Airport placement example (from textbook)</div>
+        <p>Place 3 airports in Romania to minimize the total squared distance from every city to its nearest airport. The state space has <b>6 variables</b>: (x1,y1), (x2,y2), (x3,y3). Moving in this space = physically moving an airport on the map. Every real number is a valid coordinate — infinite choices.</p>
+      </div>
+
+      <hr>
+      <h3>Two approaches to handle continuous spaces</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num" style="background:rgba(240,168,58,0.15); color:var(--accent4);">1</div>
+          <div class="step-body"><b>Discretization</b> — artificially divide the space into steps of ±δ. Move each variable by a small fixed amount. With 6 variables this gives 12 possible moves. Then apply any standard local search algorithm.</div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(240,168,58,0.15); color:var(--accent4);">2</div>
+          <div class="step-body"><b>Gradient methods</b> — use calculus. The gradient ∇f is a vector that gives the direction and steepness of the steepest uphill slope at the current point. Move in that direction by a step size α.<br><br>Update rule: <code>x_new = x + α · ∇f(x)</code><br><br>This is called <b>gradient ascent</b> (maximizing) or <b>gradient descent</b> (minimizing).</div>
+        </div>
+      </div>
+
+      <div class="highlight">
+        <b>Solving ∇f = 0 analytically</b> finds the exact optimum — but only works for simple problems. For complex problems (like 3 airports), the gradient depends on which cities are closest to which airport, so it changes as you move. You must compute it locally and step iteratively.
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="slabel">Gradient gives you</div>
+          <div class="sval" style="font-size:1rem; color:var(--accent4);">Direction + steepness</div>
+          <div class="sdesc">of slope at current point</div>
+        </div>
+        <div class="stat-card">
+          <div class="slabel">Used in ML</div>
+          <div class="sval" style="font-size:1rem; color:var(--accent3);">Neural nets</div>
+          <div class="sdesc">gradient descent training</div>
+        </div>
+      </div>
+
+      <div class="mcq-section">
+        <div class="mcq-label">⚡ Exam focus</div>
+        <div class="chip-row">
+          <span class="chip">continuous space</span><span class="chip">infinite branching factor</span><span class="chip">discretization</span><span class="chip">gradient (∇f)</span><span class="chip">gradient descent / ascent</span><span class="chip">step size α</span><span class="chip">∇f = 0</span><span class="chip">variables / n-dimensional</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  function show(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    const map = { overview:0, local:1, hillclimb:2, simulated:3, beam:4, genetic:5, continuous:6 };
+    document.querySelectorAll('.nav-item')[map[id]].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
