@@ -1,0 +1,24 @@
+* F:\EEE Lab\Exp2.1.sch
+
+* Schematics Version 9.1 - Web Update 1
+* Mon Jan 20 14:55:58 2025
+
+
+
+** Analysis setup **
+.DC LIN V_Vce 0 10 0.1 
++ LIN I_IB 0 1m 0.2m 
+.OP 
+
+
+* From [PSPICE NETLIST] section of pspiceev.ini:
+.lib "nom.lib"
+
+.INC "Exp2.1.net"
+.INC "Exp2.1.als"
+
+
+.probe
+
+
+.END

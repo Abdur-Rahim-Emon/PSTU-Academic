@@ -1,0 +1,172 @@
+
+**** 01/21/25 13:16:55 *********** Evaluation PSpice (Nov 1999) **************
+
+ * F:\EEE Lab\Half Waves.sch
+
+
+ ****     CIRCUIT DESCRIPTION
+
+
+******************************************************************************
+
+
+
+
+* Schematics Version 9.1 - Web Update 1
+* Tue Jan 21 13:16:55 2025
+
+
+
+** Analysis setup **
+.tran 0ns 5ms
+.OP 
+
+
+* From [PSPICE NETLIST] section of pspiceev.ini:
+.lib "nom.lib"
+
+.INC "Half Waves.net"
+
+**** INCLUDING "Half Waves.net" ****
+* Schematics Netlist *
+
+
+
+D_D1         $N_0001 $N_0002 D1N4002 
+R_R1         $N_0002 0  1k  
+V_V1         $N_0001 0 DC 0 AC 0
++SIN 0 20 1K 0 0 0
+
+**** RESUMING "Half Waves.cir" ****
+.INC "Half Waves.als"
+
+
+
+**** INCLUDING "Half Waves.als" ****
+* Schematics Aliases *
+
+.ALIASES
+D_D1            D1(1=$N_0001 2=$N_0002 )
+R_R1            R1(1=$N_0002 2=0 )
+V_V1            V1(+=$N_0001 -=0 )
+.ENDALIASES
+
+
+**** RESUMING "Half Waves.cir" ****
+.probe
+
+
+.END
+
+**** 01/21/25 13:16:55 *********** Evaluation PSpice (Nov 1999) **************
+
+ * F:\EEE Lab\Half Waves.sch
+
+
+ ****     Diode MODEL PARAMETERS
+
+
+******************************************************************************
+
+
+
+
+               D1N4002         
+          IS   14.110000E-09 
+           N    1.984        
+         ISR  100.000000E-12 
+         IKF   94.81         
+          BV  100.1          
+         IBV   10            
+          RS     .03389      
+          TT    4.761000E-06 
+         CJO   51.170000E-12 
+          VJ     .3905       
+           M     .2762       
+
+
+**** 01/21/25 13:16:55 *********** Evaluation PSpice (Nov 1999) **************
+
+ * F:\EEE Lab\Half Waves.sch
+
+
+ ****     SMALL SIGNAL BIAS SOLUTION       TEMPERATURE =   27.000 DEG C
+
+
+******************************************************************************
+
+
+
+ NODE   VOLTAGE     NODE   VOLTAGE     NODE   VOLTAGE     NODE   VOLTAGE
+
+
+($N_0001)    0.0000                   ($N_0002)-30.71E-21                   
+
+
+
+
+    VOLTAGE SOURCE CURRENTS
+    NAME         CURRENT
+
+    V_V1         3.071E-23
+
+    TOTAL POWER DISSIPATION   0.00E+00  WATTS
+
+
+**** 01/21/25 13:16:55 *********** Evaluation PSpice (Nov 1999) **************
+
+ * F:\EEE Lab\Half Waves.sch
+
+
+ ****     OPERATING POINT INFORMATION      TEMPERATURE =   27.000 DEG C
+
+
+******************************************************************************
+
+
+
+
+
+
+**** DIODES
+
+
+NAME         D_D1      
+MODEL        D1N4002   
+ID           0.00E+00 
+VD           3.07E-20 
+REQ          3.61E+06 
+CAP          5.25E-11 
+**** 01/21/25 13:16:55 *********** Evaluation PSpice (Nov 1999) **************
+
+ * F:\EEE Lab\Half Waves.sch
+
+
+ ****     INITIAL TRANSIENT SOLUTION       TEMPERATURE =   27.000 DEG C
+
+
+******************************************************************************
+
+
+
+ NODE   VOLTAGE     NODE   VOLTAGE     NODE   VOLTAGE     NODE   VOLTAGE
+
+
+($N_0001)    0.0000                   ($N_0002)-30.71E-21                   
+
+
+
+
+    VOLTAGE SOURCE CURRENTS
+    NAME         CURRENT
+
+    V_V1         3.071E-23
+
+    TOTAL POWER DISSIPATION   0.00E+00  WATTS
+
+
+
+          JOB CONCLUDED
+
+          TOTAL JOB TIME             .02
+

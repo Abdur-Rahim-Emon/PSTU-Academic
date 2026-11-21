@@ -1,0 +1,23 @@
+* F:\EEE Lab\TEST.sch
+
+* Schematics Version 9.1 - Web Update 1
+* Mon Nov 18 07:25:34 2024
+
+
+
+** Analysis setup **
+.tran 0ns 5ms
+.OP 
+
+
+* From [PSPICE NETLIST] section of pspiceev.ini:
+.lib "nom.lib"
+
+.INC "TEST.net"
+.INC "TEST.als"
+
+
+.probe
+
+
+.END

@@ -1,0 +1,23 @@
+* F:\EEE Lab\Full wave.sch
+
+* Schematics Version 9.1 - Web Update 1
+* Mon Nov 18 07:58:32 2024
+
+
+
+** Analysis setup **
+.tran 0ns 5ms
+.OP 
+
+
+* From [PSPICE NETLIST] section of pspiceev.ini:
+.lib "nom.lib"
+
+.INC "Full wave.net"
+.INC "Full wave.als"
+
+
+.probe
+
+
+.END

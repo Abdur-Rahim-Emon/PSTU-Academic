@@ -1,0 +1,171 @@
+
+**** 01/20/25 19:06:22 *********** Evaluation PSpice (Nov 1999) **************
+
+ * F:\EEE Lab\Exp2.2SCH.sch
+
+
+ ****     CIRCUIT DESCRIPTION
+
+
+******************************************************************************
+
+
+
+
+* Schematics Version 9.1 - Web Update 1
+* Mon Jan 20 19:06:21 2025
+
+
+
+** Analysis setup **
+.DC LIN V_Vcb 0 10 0.1 
++ LIN I_IE 0 1m 0.2m 
+.OP 
+
+
+* From [PSPICE NETLIST] section of pspiceev.ini:
+.lib "nom.lib"
+
+.INC "Exp2.2SCH.net"
+
+**** INCLUDING Exp2.2SCH.net ****
+* Schematics Netlist *
+
+
+
+V_Vcb         $N_0001 0 0V
+Q_Q5         $N_0001 0 $N_0002 Q2N2222
+I_IE         $N_0002 0 DC 0A  
+
+**** RESUMING Exp2.2SCH.cir ****
+.INC "Exp2.2SCH.als"
+
+
+
+**** INCLUDING Exp2.2SCH.als ****
+* Schematics Aliases *
+
+.ALIASES
+V_Vcb           Vcb(+=$N_0001 -=0 )
+Q_Q5            Q5(c=$N_0001 b=0 e=$N_0002 )
+I_IE            IE(+=$N_0002 -=0 )
+.ENDALIASES
+
+
+**** RESUMING Exp2.2SCH.cir ****
+.probe
+
+
+.END
+
+**** 01/20/25 19:06:22 *********** Evaluation PSpice (Nov 1999) **************
+
+ * F:\EEE Lab\Exp2.2SCH.sch
+
+
+ ****     BJT MODEL PARAMETERS
+
+
+******************************************************************************
+
+
+
+
+               Q2N2222         
+               NPN             
+          IS   14.340000E-15 
+          BF  255.9          
+          NF    1            
+         VAF   74.03         
+         IKF     .2847       
+         ISE   14.340000E-15 
+          NE    1.307        
+          BR    6.092        
+          NR    1            
+          RB   10            
+          RC    1            
+         CJE   22.010000E-12 
+         MJE     .377        
+         CJC    7.306000E-12 
+         MJC     .3416       
+          TF  411.100000E-12 
+         XTF    3            
+         VTF    1.7          
+         ITF     .6          
+          TR   46.910000E-09 
+         XTB    1.5          
+          CN    2.42         
+           D     .87         
+
+
+**** 01/20/25 19:06:22 *********** Evaluation PSpice (Nov 1999) **************
+
+ * F:\EEE Lab\Exp2.2SCH.sch
+
+
+ ****     SMALL SIGNAL BIAS SOLUTION       TEMPERATURE =   27.000 DEG C
+
+
+******************************************************************************
+
+
+
+ NODE   VOLTAGE     NODE   VOLTAGE     NODE   VOLTAGE     NODE   VOLTAGE
+
+
+($N_0001)    0.0000                   ($N_0002)-4.852E-15                   
+
+
+
+
+    VOLTAGE SOURCE CURRENTS
+    NAME         CURRENT
+
+    V_Vcb        1.570E-27
+
+    TOTAL POWER DISSIPATION   0.00E+00  WATTS
+
+
+**** 01/20/25 19:06:22 *********** Evaluation PSpice (Nov 1999) **************
+
+ * F:\EEE Lab\Exp2.2SCH.sch
+
+
+ ****     OPERATING POINT INFORMATION      TEMPERATURE =   27.000 DEG C
+
+
+******************************************************************************
+
+
+
+
+
+
+**** BIPOLAR JUNCTION TRANSISTORS
+
+
+NAME         Q_Q5      
+MODEL        Q2N2222   
+IB           2.09E-27 
+IC           7.54E-27 
+VBE          4.85E-15 
+VBC          0.00E+00 
+VCE          4.85E-15 
+BETADC       7.54E-07 
+GM           1.04E-25 
+RPI          2.32E+12 
+RX           1.00E+01 
+RO           6.43E+11 
+CBE          2.20E-11 
+CBC          7.31E-12 
+CJS          0.00E+00 
+BETAAC       2.41E-13 
+CBX/CBX2     0.00E+00 
+FT/FT2       5.62E-16 
+
+
+
+          JOB CONCLUDED
+
+          TOTAL JOB TIME             .03
+
