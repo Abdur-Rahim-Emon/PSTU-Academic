@@ -23,12 +23,3 @@
 /4 th semeseter/4 th semeseter/Data Base/Murad sir/CCE-224_sessional_Murad Sir's part.zip
 
 .git_backup/
-
-# Files larger than GitHub's 100 MB limit
-/2nd Semester/2nd Semester/CCE/2_CCE_How_to_program_series_Deitel,_Harvey_M_Deitel,_Paul_J_Java.pdf
-/2nd Semester/2nd Semester/CCE Lab problme sorna maam/2_CCE_How_to_program_series_Deitel,_Harvey_M_Deitel,_Paul_J_Java.pdf
-/3rd Semester/3rd Semester/Question/Ques_pdf.zip
-/4 th semeseter/4 th semeseter/Data Base/Muradsir/CCE-224_sessional_Murad Sir's part.zip
-
-# Ignore nested Git backup folders
-.git_backup/
