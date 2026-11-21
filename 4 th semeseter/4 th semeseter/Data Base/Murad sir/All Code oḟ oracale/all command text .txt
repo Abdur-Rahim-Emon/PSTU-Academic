@@ -1,0 +1,370 @@
+--profile 
+
+CREATE PROFILE Combined_profile LIMIT
+             FAILED_LOGIN_ATTEMPTS 2
+              PASSWORD_LIFE_TIME 10
+       PASSWORD_REUSE_TIME 5
+       PASSWORD_REUSE_MAX 2
+      PASSWORD_LOCK_TIME 1
+               PASSWORD_GRACE_TIME 8
+             ;
+
+--user create 
+ create user sohel identified by sohel profile combined_profile;
+ create user mostofa identified by mst profile combined_profile ;
+GRANT CREATE SESSION,CREATE TABLE ,CREATE VIEW,CREATE SYNOYM TO SOHEL; 
+ alter user sohel default tablespace users quota 5m on users;
+ --table for user 
+  create table newspaper (
+   feature varchar(50),
+  section varchar(2),
+    page int);
+	insert into newspaper values ('history','A',1)
+--- for grant all acess use
+  grant all newspaper to sohel;
+	grant insert on newspaper to sohel;
+
+
+--trigger start from here 
+
+
+--BEFOR CRATE TABLE 
+DROP TABLE BOOKSHELF CASCADE CONSTRAINTS;
+ create table BOOKSHELF
+    (Title       VARCHAR2(20) primary key,
+    Publisher    VARCHAR2(15),
+   CategoryName VARCHAR2(15),
+   Rating       varchar2(2)
+    ); 
+
+Insert into BOOKSHELF values
+      ('TO KILL A MOCKI','HARPERCOLLINS','ADULTFIC','5');
+Insert into BOOKSHELF values
+      ('TO KILL A MOCK','HARPERCOLLINS','ADULTFIC','15');
+select * from bookshelf;
+insert into bookshelf values('C programming','Prentic Hall','Programming','8');
+drop table BOOKSHELF_AUDIT;
+create table BOOKSHELF_AUDIT
+(Title       VARCHAR2(20),
+Publisher    VARCHAR2(15),
+CategoryName VARCHAR2(15),
+Old_Rating   VARCHAR2(15),
+New_Rating   VARCHAR2(2),
+Audit_Date   DATE); 
+
+
+--trigger code 
+create or replace trigger BOOKSHELF_BEF_UPD_ROW
+before update on BOOKSHELF
+for each row
+when (new.Rating < old.Rating)
+begin
+insert into BOOKSHELF_AUDIT
+(Title, Publisher, CategoryName,
+Old_Rating, New_Rating, Audit_Date)
+values
+(:old.Title, :old.Publisher, :old.CategoryName,
+:old.Rating, :new.Rating, Sysdate);
+end;
+/
+
+
+update BOOKSHELF set rating = 10;
+select * from bookshelf_audit;
+
+
+ UPDATE bookshelf
+    SET rating = '8'
+   WHERE title = 'C programming';
+
+
+create or replace trigger BOOKSHELF_BEF_UPD_INS_ROW
+before insert or update of Rating on BOOKSHELF
+for each row
+begin
+if INSERTING then
+insert into BOOKSHELF_AUDIT
+(Title, Publisher, CategoryName,
+New_Rating, Audit_Date)
+values
+(:new.Title, :new.Publisher, :new.CategoryName,
+:new.Rating, Sysdate);
+else -- if not inserting then we are updating the Rating
+insert into BOOKSHELF_AUDIT
+(Title, Publisher, CategoryName,
+Old_Rating, New_Rating, Audit_Date)
+values
+(:old.Title, :old.Publisher, :old.CategoryName,
+:old.Rating, :new.Rating, Sysdate);
+end if;
+end;
+/
+
+
+create or replace trigger BOOKSHELF_BEF_UPD_INS_ROW
+   before insert or update of Rating on BOOKSHELF
+    for each row
+    begin
+    if INSERTING then
+    insert into BOOKSHELF_AUDIT
+    (Title, Publisher, CategoryName,
+    New_Rating, Audit_Date)
+    values
+   (:new.Title, :new.Publisher, :new.CategoryName,
+   :new.Rating, Sysdate);
+   else -- if not inserting then we are updating the Rating
+   insert into BOOKSHELF_AUDIT
+   (Title, Publisher, CategoryName,
+   Old_Rating, New_Rating, Audit_Date)
+   values
+   (:old.Title, :old.Publisher, :old.CategoryName,
+   :old.Rating, :new.Rating, Sysdate);
+   end if;
+   end;
+   /
+
+select * from BOOKSHELF;
+select * from BOOKSHELF_AUDIT;
+ Insert into BOOKSHELF values
+  ('WONDERFUL LIFE','W.W.NORTON','ADULTNF','5');
+select * from BOOKSHELF_AUDIT;
+ update BOOKSHELF set rating = 10;
+
+
+
+create or replace trigger are_trigger 
+before insert or update of rating on bookshelf 
+for each row 
+begin 
+if inserting then 
+insert into bookshelf_audit (Title,Publisher,CategoryName,new_Rating,Audit_date) 
+values
+(:new.Title, :new.Publisher, :new.CategoryName, :new.rating, Sysdate );
+else 
+insert into bookshelf_audit (Title,Publisher,CategoryName,old_rating,new_Rating,Audit_date) 
+ 
+values
+(:new.Title, :new.Publisher, :new.CategoryName,:old.rating, :new.ratig, Sysdate );
+end if ;
+end;
+/
+
+
+create or replace trigger BOOKSHELF_BEF_DEL
+before delete on BOOKSHELF
+declare
+weekend_error EXCEPTION;
+not_library_user EXCEPTION;
+begin
+if TO_CHAR(SysDate,'DY') = 'SAT' or
+TO_CHAR(SysDate,'DY') = 'SUN' THEN
+RAISE weekend_error;
+end if;
+if SUBSTR(User,1,3) <> 'LIB' THEN
+RAISE not_library_user;
+end if;
+EXCEPTION
+WHEN weekend_error THEN
+RAISE_APPLICATION_ERROR (-20001,
+'Deletions not allowed on weekends');
+WHEN not_library_user THEN
+RAISE_APPLICATION_ERROR (-20002,
+'Deletions only allowed by Library users');
+end;
+/
+Insert into BOOKSHELF values
+('MY LEDGER','KOCH PRESS','ADULTNF','5');
+
+delete bookshelf where title='C programming';
+delete from BOOKSHELF
+where Title = 'MY LEDGER';
+
+
+CREATE TABLE employees2 (
+      emp_id      NUMBER PRIMARY KEY,
+        emp_name    VARCHAR2(50),
+        salary      NUMBER
+   );
+
+CREATE OR REPLACE TRIGGER trg_check_salary2
+    BEFORE INSERT OR UPDATE ON employees2
+    FOR EACH ROW
+    BEGIN
+        -- Check salary condition
+       IF :NEW.salary > 100000 THEN
+            -- Raise custom error with error code and message
+            RAISE_APPLICATION_ERROR(-20001, 'Salary cannot exceed 100,000.');
+        END IF;
+   END;
+  /
+--normal value
+INSERT INTO employees2 (emp_id, emp_name, salary)
+    VALUES (1, 'John', 50000);
+
+--VALUE FOR CHECKING THE MESSAGE
+ INSERT INTO employees2 (emp_id, emp_name, salary)
+    VALUES (2, 'Alice', 150000);
+
+
+
+--new trigger 
+CREATE TABLE employees7 (
+        emp_id      NUMBER PRIMARY KEY,
+       emp_name    VARCHAR2(50),
+       salary      NUMBER,
+        department  VARCHAR2(50)
+    );
+
+
+CREATE TABLE error_log7 (
+        error_time   TIMESTAMP,
+        emp_id       NUMBER,
+       error_msg    VARCHAR2(200)
+    );
+
+
+CREATE OR REPLACE TRIGGER trg_validate_employee7
+    BEFORE INSERT OR UPDATE ON employees7
+    FOR EACH ROW
+    DECLARE
+        PRAGMA AUTONOMOUS_TRANSACTION;  -- ✅ Allows separate commit
+        v_error_msg VARCHAR2(200);
+    BEGIN
+        -- Salary validation
+        IF :NEW.salary < 10000 OR :NEW.salary > 100000 THEN
+           v_error_msg := 'Salary must be between 10,000 and 100,000.';
+
+           INSERT INTO error_log7 (error_time, emp_id, error_msg)
+           VALUES (SYSTIMESTAMP, :NEW.emp_id, v_error_msg);
+
+          COMMIT; -- ✅ Commit independent transaction
+           RAISE_APPLICATION_ERROR(-20002, v_error_msg);
+       END IF;
+ 
+     -- Department validation
+      IF :NEW.department NOT IN ('HR', 'IT', 'SALES') THEN
+           v_error_msg := 'Department must be HR, IT, or SALES.';
+
+           INSERT INTO error_log7 (error_time, emp_id, error_msg)
+          VALUES (SYSTIMESTAMP, :NEW.emp_id, v_error_msg);
+
+          COMMIT; -- ✅ Commit independent transaction
+ 
+          RAISE_APPLICATION_ERROR(-20003, v_error_msg);
+       END IF;
+   END;
+  /
+--normal value
+INSERT INTO employees7 VALUES (1, 'John', 50000, 'IT');
+--test value for salary
+INSERT INTO employees7 VALUES (2, 'Alice', 500, 'HR');
+--test value for department 
+ INSERT INTO employees7 VALUES (3, 'Bob', 60000, 'FINANCE');
+
+select Feature, Section, Page from NEWSPAPER
+where Feature LIKE 'Mo%';
+
+select Feature, Section, Page
+from NEWSPAPER
+where Section IN ('A','B','F');
+select * from NEWSPAPER
+where Section < (select Section from NEWSPAPER
+where Feature = 'Doctor Is In');
+select City, Country from LOCATION
+where City IN (select City from WEATHER
+where Condition = 'CLOUDY');
+
+create table WEATHER (
+City         VARCHAR2(11),
+Temperature  NUMBER,
+Humidity     NUMBER,
+Condition    VARCHAR2(9)
+);
+
+insert into WEATHER values ('LIMA',45,79,'RAIN');
+insert into WEATHER values ('PARIS',81,62,'CLOUDY');
+insert into WEATHER values ('MANCHESTER',66,98,'FOG');
+insert into WEATHER values ('ATHENS',97,89,'SUNNY');
+insert into WEATHER values ('CHICAGO',66,88,'RAIN');
+insert into WEATHER values ('SYDNEY',69,99,'SUNNY');
+insert into WEATHER values ('SPARTA',74,63,'CLOUDY');
+
+
+create table LOCATION (
+City       VARCHAR2(25),
+Country    VARCHAR2(25),
+Continent  VARCHAR2(25),
+Latitude   NUMBER,
+NorthSouth CHAR(1),
+Longitude  NUMBER,
+EastWest   CHAR(1)
+);
+
+insert into LOCATION values (
+  'ATHENS','GREECE','EUROPE',37.58,'N',23.43,'E');
+insert into LOCATION values (
+  'CHICAGO','UNITED STATES','NORTH AMERICA',41.53,'N',87.38,'W');
+insert into LOCATION values (
+  'CONAKRY','GUINEA','AFRICA',9.31,'N',13.43,'W');
+insert into LOCATION values (
+  'LIMA','PERU','SOUTH AMERICA',12.03,'S',77.03,'W');
+insert into LOCATION values (
+  'MADRAS','INDIA','INDIA',13.05,'N',80.17,'E');
+insert into LOCATION values (
+  'MANCHESTER','ENGLAND','EUROPE',53.30,'N',2.15,'W');
+insert into LOCATION values (
+  'MOSCOW','RUSSIA','EUROPE',55.45,'N',37.35,'E');
+insert into LOCATION values (
+  'PARIS','FRANCE','EUROPE',48.52,'N',2.20,'E');
+insert into LOCATION values (
+  'SHENYANG','CHINA','CHINA',41.48,'N',123.27,'E');
+insert into LOCATION values (
+  'ROME','ITALY','EUROPE',41.54,'N',12.29,'E');
+insert into LOCATION values (
+  'TOKYO','JAPAN','ASIA',35.42,'N',139.46,'E');
+insert into LOCATION values (
+  'SYDNEY','AUSTRALIA','AUSTRALIA',33.52,'S',151.13,'E');
+insert into LOCATION values (
+  'SPARTA','GREECE','EUROPE',37.05,'N',22.27,'E');
+insert into LOCATION values (
+  'MADRID','SPAIN','EUROPE',40.24,'N',3.41,'W');
+	
+create view INVASION AS
+select WEATHER.City, Condition, Temperature, Latitude,
+NorthSouth, Longitude, EastWest
+from WEATHER, LOCATION
+where WEATHER.City = LOCATION.City;
+
+select City, Condition, Temperature, Latitude, NorthSouth,
+Longitude, EastWest
+from INVASION
+where Country = 'GREECE';
+
+create or replace view INVASION as
+select WEATHER.City, Condition, Temperature, Latitude,
+NorthSouth, Longitude, EastWest
+from WEATHER, LOCATION
+where WEATHER.City = LOCATION.City
+and Country = 'GREECE';
+
+drop table NEWSPAPER;
+create table NEWSPAPER (
+Feature      VARCHAR2(15) not null,
+Section      CHAR(1),
+Page         NUMBER
+);
+
+insert into NEWSPAPER values ('National News', 'A', 1);
+insert into NEWSPAPER values ('Sports', 'D', 1);
+insert into NEWSPAPER values ('Editorials', 'A', 12);
+insert into NEWSPAPER values ('Business', 'E', 1);
+insert into NEWSPAPER values ('Weather', 'C', 2);
+insert into NEWSPAPER values ('Television', 'B', 7);
+insert into NEWSPAPER values ('Births', 'F', 7);
+insert into NEWSPAPER values ('Classified', 'F', 8);
+insert into NEWSPAPER values ('Modern Life', 'B', 1);
+insert into NEWSPAPER values ('Comics', 'C', 4);
+insert into NEWSPAPER values ('Movies', 'B', 4);
+insert into NEWSPAPER values ('Bridge', 'B', 2);
+insert into NEWSPAPER values ('Obituaries', 'F', 6);
+insert into NEWSPAPER values ('Doctor Is In', 'F', 6);

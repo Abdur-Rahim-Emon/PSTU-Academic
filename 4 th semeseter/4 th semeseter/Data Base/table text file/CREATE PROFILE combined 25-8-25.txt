@@ -1,0 +1,112 @@
+Microsoft Windows [Version 10.0.22631.4460]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\Lenovo>sqlplus
+
+SQL*Plus: Release 10.2.0.1.0 - Production on Thu Jan 30 22:59:57 2025
+
+Copyright (c) 1982, 2005, Oracle.  All rights reserved.
+
+Enter user-name: system
+Enter password:
+
+Connected to:
+Oracle Database 10g Express Edition Release 10.2.0.1.0 - Production
+
+SQL> CREATE PROFILE Combined_profile LIMIT
+             FAILED_LOGIN_ATTEMPTS 2
+              PASSWORD_LIFE_TIME 10
+       PASSWORD_REUSE_TIME 5
+       PASSWORD_REUSE_MAX 2
+      PASSWORD_LOCK_TIME 1
+               PASSWORD_GRACE_TIME 8
+             ;
+
+Profile created.
+
+SQL> create user JANEcom identified by EYRE
+  profile Combined_profile;
+
+User created.
+
+SQL> grant CREATE SESSION to JANEcom;
+
+Grant succeeded.
+
+SQL> connect JANEcom/EYRE
+Connected.
+SQL> connect JANEcom/EYRE
+Connected.
+SQL> connect JANEcom/EYR
+ERROR:
+ORA-01017: invalid username/password; logon denied
+
+
+Warning: You are no longer connected to ORACLE.
+SQL> connect JANEcom/EYR
+ERROR:
+ORA-01017: invalid username/password; logon denied
+
+
+SQL> connect JANEcom/EYR
+ERROR:
+ORA-28000: the account is locked
+
+
+SQL> connect JANEcom/EYRE
+Connected.
+SQL> password
+Changing password for JANECOM
+Old password:
+New password:
+Retype new password:
+Password changed
+SQL> password
+Changing password for JANECOM
+Old password:
+New password:
+Retype new password:
+Password changed
+SQL> password
+Changing password for JANECOM
+Old password:
+New password:
+Retype new password:
+Password changed
+SQL> password
+Changing password for JANECOM
+Old password:
+New password:
+Retype new password:
+ERROR:
+ORA-28007: the password cannot be reused
+
+
+Password unchanged
+SQL> password
+Changing password for JANECOM
+Old password:
+New password:
+Retype new password:
+ERROR:
+ORA-28007: the password cannot be reused
+
+
+Password unchanged
+SQL> password
+Changing password for JANECOM
+Old password:
+New password:
+Retype new password:
+ERROR:
+ORA-28007: the password cannot be reused
+
+
+Password unchanged
+SQL> connect JANEcom/3
+ERROR:
+ORA-28002: the password will expire within 8 days
+
+
+Connected.
+SQL>
